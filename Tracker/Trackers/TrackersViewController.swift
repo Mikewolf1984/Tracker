@@ -1,6 +1,12 @@
 import UIKit
 
 final class TrackersViewController: UIViewController {
+
+    
+    private var categories: [TrackerCategory] = []
+    private var completedTrackers: [TrackerRecord] = []
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTrackersView()
@@ -24,10 +30,18 @@ final class TrackersViewController: UIViewController {
         dizzyLabel.centerXAnchor.constraint(equalTo: dizzyImageView.centerXAnchor).isActive = true
         dizzyLabel.topAnchor.constraint(equalTo: dizzyImageView.bottomAnchor, constant: 8).isActive = true
         
-        let addButton = UIButton(type: .system)
-        addButton.setImage(UIImage(named: "addButton"), for: .normal)
-        addButton.tintColor = .black
+        
+        let addButton: UIButton = {
+            let button: UIButton = UIButton(type: .system)
+            button.setImage(UIImage(named: "addButton"), for: .normal)
+            button.tintColor = .black
+            
+            button.addTarget(self, action: #selector(addButtonTouch), for: .touchUpInside)
+            return button
+        }()
+        
         view.addSubview(addButton)
+        
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 6).isActive = true
         addButton.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 1).isActive = true
@@ -36,7 +50,9 @@ final class TrackersViewController: UIViewController {
         
         let datePickerButton = UIDatePicker()
         datePickerButton.datePickerMode = .date
+        datePickerButton.preferredDatePickerStyle = .compact
         view.addSubview(datePickerButton)
+        
         datePickerButton.translatesAutoresizingMaskIntoConstraints = false
         datePickerButton.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 1).isActive = true
         datePickerButton.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -16).isActive = true
@@ -46,12 +62,14 @@ final class TrackersViewController: UIViewController {
         trackersLabel.font  = UIFont.systemFont(ofSize: 34, weight: .bold)
         trackersLabel.textColor = .black
         view.addSubview(trackersLabel)
+        
         trackersLabel.translatesAutoresizingMaskIntoConstraints = false
         trackersLabel.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 1).isActive = true
         trackersLabel.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 16).isActive = true
         
         let searchField = UISearchBar()
         view.addSubview(searchField)
+        
         searchField.translatesAutoresizingMaskIntoConstraints = false
         searchField.topAnchor.constraint(equalTo: trackersLabel.bottomAnchor, constant: 7).isActive = true
         searchField.centerXAnchor.constraint(equalTo: safeArea.centerXAnchor).isActive = true
@@ -59,7 +77,12 @@ final class TrackersViewController: UIViewController {
         searchField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         searchField.searchBarStyle = .minimal
         
-        
+    }
+    
+    @objc func addButtonTouch() {
+        let addNewTrackerViewController = AddNewTrackerViewController()
+        addNewTrackerViewController.modalPresentationStyle = .automatic
+        present(addNewTrackerViewController, animated: true, completion: nil)
     }
 }
 
