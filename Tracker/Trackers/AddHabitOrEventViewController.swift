@@ -2,21 +2,22 @@ import UIKit
 
 final class AddHabitOrEventViewController: UIViewController {
     var trackerType = TrackerType.habit
-    private let emogies = [ "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
-    
-    private var tableViewData: [String] = []
+    private let emojies = [ "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
+    private let categories = TrackersViewController.shared.categories
+    private var tableViewData = ["Категория","Расписание"]
     private let colors = [UIColor(named: "selColor1 1"),UIColor(named: "selColor1 2"),UIColor(named: "selColor1 3"),UIColor(named: "selColor1 4"),UIColor(named: "selColor1 5"), UIColor(named: "selColor1 6"),UIColor(named: "selColor1 7"),UIColor(named: "selColor1 8"),UIColor(named: "selColor1 9"),UIColor(named: "selColor1 10"), UIColor(named: "selColor1 11"),UIColor(named: "selColor1 12"),UIColor(named: "selColor1 13"),UIColor(named: "selColor1 14"),UIColor(named: "selColor1 15"),UIColor(named: "selColor1 16"),UIColor(named: "selColor1 17"),UIColor(named: "selColor1 18")]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         configureView()
     }
     private func configureView() {
         
         switch trackerType {
         case .habit: tableViewData = ["Категория","Расписание"]
-        case .irregularEvent: tableViewData = ["Категория"]
+        case .irregularEvent: tableViewData = ["Расписание"]
         }
         
         let  trackerTypeLabel: UILabel = {
@@ -50,10 +51,11 @@ final class AddHabitOrEventViewController: UIViewController {
         }()
         view.addSubview(cancelButton)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        let viewWidth = view.frame.width
         NSLayoutConstraint.activate([
             cancelButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             cancelButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -34),
-            cancelButton.widthAnchor.constraint(equalToConstant: 166),
+            cancelButton.widthAnchor.constraint(equalToConstant: (viewWidth-48)/2),
             cancelButton.heightAnchor.constraint(equalToConstant: 60)])
         
         let createButton: UIButton = {
@@ -70,7 +72,7 @@ final class AddHabitOrEventViewController: UIViewController {
         NSLayoutConstraint.activate([
             createButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             createButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -34),
-            createButton.widthAnchor.constraint(equalToConstant: 166),
+            createButton.widthAnchor.constraint(equalTo: cancelButton.widthAnchor),
             createButton.heightAnchor.constraint(equalToConstant: 60)])
         
         let nameTextField: UITextField = {
@@ -98,14 +100,17 @@ final class AddHabitOrEventViewController: UIViewController {
         
         let tableView: UITableView = {
             let tableView: UITableView = UITableView()
-            tableView.register(UINib(nibName: "AddHabitOrEventTableViewCell", bundle: nil), forCellReuseIdentifier: "AddHabitOrEventTableViewCell")
+            tableView.register(AddTrackerCell.self, forCellReuseIdentifier: "cell")
             tableView.layer.cornerRadius = 16
             tableView.backgroundColor = UIColor(named: "textBackGroundColor")
+            tableView.separatorStyle = .singleLine
             return tableView
         }()
         
+        
         tableView.delegate = self
-        //tableView.dataSource = self
+        tableView.dataSource = self
+        
         
         view.addSubview(tableView)
         
@@ -119,23 +124,23 @@ final class AddHabitOrEventViewController: UIViewController {
         
         
         
-        let emojiesCollectionView: UICollectionView = {
-            let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-            layout.scrollDirection = .vertical
-            layout.itemSize = CGSize(width: 52, height: 52)
-            let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-            return collectionView
-        }()
-        
-        
-        let colorsCollectionView: UICollectionView = {
-            let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-            layout.scrollDirection = .vertical
-            layout.itemSize = CGSize(width: 40, height: 40)
-            let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-            return collectionView
-        }()
-        
+        /*        let emojiesCollectionView: UICollectionView = {
+         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+         layout.scrollDirection = .vertical
+         layout.itemSize = CGSize(width: 52, height: 52)
+         let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+         return collectionView
+         }()
+         
+         
+         let colorsCollectionView: UICollectionView = {
+         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+         layout.scrollDirection = .vertical
+         layout.itemSize = CGSize(width: 40, height: 40)
+         let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+         return collectionView
+         }()
+         */
         
     }
     
@@ -143,7 +148,7 @@ final class AddHabitOrEventViewController: UIViewController {
     
     
     @objc func cancelButtonTapped() {
-        
+        self.dismiss(animated: true)
     }
     
     @objc func createButtonTapped() {
@@ -160,25 +165,40 @@ extension AddHabitOrEventViewController: UITableViewDelegate {
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return tableViewData.count
+        return categories.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }
-    
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if tableViewData[indexPath.row] == "Расписание" {
+            let scheduleSelectViewController = ScheduleSelectViewController()
+            present(scheduleSelectViewController, animated: true, completion: nil)
+        } else {
+            
+            let categorySelectController = CategorySelectController()
+            present(categorySelectController, animated: true, completion: nil)
+        }
+    }
 }
 
-/* extension AddNewTrackerViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
-    }
+extension AddHabitOrEventViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UITableViewCell()
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! AddTrackerCell
+        if indexPath.row == tableViewData.count - 1 {
+            cell.updateTexts(title: "Расписание", subtitle: nil)
+            
+        } else {
+            cell.updateTexts(title: "Категория", subtitle: categories[indexPath.row].name)
+            
+        }
+       
+        cell.accessoryType = .disclosureIndicator
         return cell
     }
-    
-} */
+}
 

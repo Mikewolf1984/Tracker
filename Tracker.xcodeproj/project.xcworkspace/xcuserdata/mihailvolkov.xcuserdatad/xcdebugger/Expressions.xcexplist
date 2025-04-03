@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "CategorySelectController.configureView():CategorySelectController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "categories">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "CategorySelectController.tableView(_:didSelectRowAt:):CategorySelectController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "tableView.cellForRow(at: indexPath)?.accessoryType">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ScheduleSelectViewController.tableView(_:cellForRowAt:):ScheduleSelectViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "daysOfWeek[indexPath.row]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.viewDidLoad():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "collectionView">
+            </PersistentString>
+            <PersistentString
+               value = "TrackersViewController.shared.categories">
+            </PersistentString>
+            <PersistentString
+               value = "categories">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "AddTrackerCell.init(style:reuseIdentifier:):AddTrackerCell.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "detailLabel.text">
+            </PersistentString>
+            <PersistentString
+               value = "titleLabel.text">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "AddHabitOrEventViewController.tableView(_:cellForRowAt:):AddHabitOrEventViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "cell?.titleText">
+            </PersistentString>
+            <PersistentString
+               value = "cell?.detailText">
+            </PersistentString>
+            <PersistentString
+               value = "tableViewData[indexPath.row]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "AddTrackerCell.setTitles(title:detail:):AddTrackerCell.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "titleLabel.text">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.numberOfSections(in:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "TrackersViewController.shared.categories">
+            </PersistentString>
+            <PersistentString
+               value = "categories">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.collectionView(_:viewForSupplementaryElementOfKind:at:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "TrackersViewController.shared.categories">
+            </PersistentString>
+            <PersistentString
+               value = "indexPath.section">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "AddHabitOrEventViewController.tableView(_:didSelectRowAt:):AddHabitOrEventViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "tableView.cellForRow(at: indexPath)?.textLabel?.text">
+            </PersistentString>
+            <PersistentString
+               value = "tableViewData[indexPath.row]">
+            </PersistentString>
+            <PersistentString
+               value = "tableViewData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.collectionView(_:cellForItemAt:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "indexPath.section">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
