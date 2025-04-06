@@ -2,7 +2,7 @@ import UIKit
 
 class ScheduleSwitchCell : UITableViewCell {
     
-    private let switchView = UISwitch()
+    let switchView = UISwitch()
     private let textLabelView = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

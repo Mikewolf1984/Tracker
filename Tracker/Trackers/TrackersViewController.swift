@@ -4,6 +4,7 @@ final class TrackersViewController: UIViewController {
     
     static let shared = TrackersViewController()
     private let cellIdentifier = "trackercell"
+    private let categoriesService = CategoriesService.shared
     private let tracker1: Tracker = .init(
         id: UUID(),
         type: .habit,
@@ -48,8 +49,7 @@ final class TrackersViewController: UIViewController {
     private var completedTrackers: [TrackerRecord] = []
     
     
-    var categories: [TrackerCategory] = []
-    
+    private  let categories = CategoriesService.shared.categories
     private var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 0
@@ -65,12 +65,12 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if !TrackersViewController.shared.categories.contains(where: { $0.name == "Привычки" }) {
+        if !CategoriesService.shared.categories.contains(where: { $0.name == "Привычки" }) {
             let cat1: TrackerCategory = .init(name: "Привычки", trackers: [tracker1,tracker2])
-            TrackersViewController.shared.categories.append(cat1)}
-        if !TrackersViewController.shared.categories.contains(where: { $0.name == "Обязанности" }) {
+            categoriesService.categories.append(cat1)}
+        if !CategoriesService.shared.categories.contains(where: { $0.name == "Обязанности" }) {
             let cat2: TrackerCategory = .init(name: "Обязанности", trackers: [tracker3])
-            TrackersViewController.shared.categories.append(cat2)
+            categoriesService.categories.append(cat2)
         }
         collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
         collectionView.register(TrackersSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
@@ -159,7 +159,7 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc func addButtonTouch() {
-        let addNewTrackerViewController = AddNewTrackerViewController()
+        let addNewTrackerViewController = AddNewTrackerViewController(delegate: self)
         addNewTrackerViewController.modalPresentationStyle = .automatic
         present(addNewTrackerViewController, animated: true, completion: nil)
     }
@@ -224,6 +224,17 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
                                                   withHorizontalFittingPriority: .required,
                                                   verticalFittingPriority: .fittingSizeLevel)
     }
+}
+
+extension TrackersViewController: AddHabitOrTrackerDelegate {
+    func trackerDidCreated(tracker: Tracker, category: TrackerCategory)  {
+        print(category)
+        categoriesService.categories
+        self.dismiss(animated: true)
+    }
     
-    
+    func trackerDidCanceled() {
+        print("Creating tracker canceled")
+        self.dismiss(animated: true)
+    }
 }

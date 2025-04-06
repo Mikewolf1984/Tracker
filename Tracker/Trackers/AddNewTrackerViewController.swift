@@ -2,6 +2,17 @@ import UIKit
 
 final class AddNewTrackerViewController: UIViewController {
     
+    init(delegate: AddHabitOrTrackerDelegate) {
+        self.delegate = delegate
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    weak var delegate: AddHabitOrTrackerDelegate?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let  trackerCreateLabel: UILabel = {
@@ -11,6 +22,7 @@ final class AddNewTrackerViewController: UIViewController {
             label.font = .systemFont(ofSize: 16, weight: .medium)
             return label
         }()
+        
         
         let habitCreateButton: UIButton = {
             let button: UIButton = UIButton(type: .system)
@@ -63,17 +75,29 @@ final class AddNewTrackerViewController: UIViewController {
     
     @objc func handleAddHabit() {
         
-        let addHabitOrEventViewController = AddHabitOrEventViewController()
-        addHabitOrEventViewController.trackerType = .habit
+        let addHabitOrEventViewController = AddHabitOrEventViewController(trackerType: .habit, delegate: self)
         addHabitOrEventViewController.modalPresentationStyle = .automatic
         present(addHabitOrEventViewController, animated: true, completion: nil)
     }
     
     @objc func handleAddIrregularEvent() {
-        let addHabitOrEventViewController = AddHabitOrEventViewController()
-        addHabitOrEventViewController.trackerType = .irregularEvent
+        let addHabitOrEventViewController = AddHabitOrEventViewController(trackerType: .irregularEvent, delegate: self)
         addHabitOrEventViewController.modalPresentationStyle = .automatic
         present(addHabitOrEventViewController, animated: true, completion: nil)
     }
     
 }
+
+extension AddNewTrackerViewController: AddHabitOrTrackerDelegate {
+    func trackerDidCreated(tracker: Tracker, category: TrackerCategory)  {
+        delegate?.trackerDidCreated(tracker: tracker, category: category)
+        print(tracker)
+    }
+    
+    func trackerDidCanceled() {
+        print("Creating tracker canceled")
+        delegate?.trackerDidCanceled()
+        self.dismiss(animated: true)
+    }
+}
+

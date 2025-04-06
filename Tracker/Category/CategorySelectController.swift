@@ -1,12 +1,58 @@
 import UIKit
 final class CategorySelectController: UIViewController {
     
-    let categories = TrackersViewController.shared.categories
+    init(selectedCategoryNumber: Int?, delegate: CategoryControllerDelegate)
+    {
+        self.delegate = delegate
+        self.selectedRow = selectedCategoryNumber
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    let categoriesService = CategoriesService.shared
+    
+    let addOrSelectButton: UIButton = {
+        let button: UIButton = UIButton(type: .system)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .black
+        button.layer.cornerRadius = 16
+        button.setTitle("", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(addOrSelectButtonTouch), for: .touchUpInside)
+        return button
+    }()
+    
+    weak var delegate: CategoryControllerDelegate?
+    private var selectedRow: Int?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         configureView()
+        if categoriesService.categories.count > 0 {
+            addOrSelectButton.setTitle("Выбрать категорию", for: .normal)
+            addOrSelectButton.isEnabled = false
+            addOrSelectButton.backgroundColor = .gray
+        } else {
+            addOrSelectButton.setTitle("Добавить категорию", for: .normal)
+            addOrSelectButton.isEnabled = true
+            addOrSelectButton.backgroundColor = .black
+        }
+        if let selectedRow {
+            addOrSelectButton.isEnabled = true
+            addOrSelectButton.backgroundColor = .black
+        } else {
+            addOrSelectButton.isEnabled = false
+            addOrSelectButton.backgroundColor = .gray
+        }
     }
+    
+    
     
     func configureView() {
         let safeArea = view.safeAreaLayoutGuide
@@ -21,7 +67,7 @@ final class CategorySelectController: UIViewController {
         topLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         topLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 28).isActive = true
         
-        if categories.isEmpty {
+        if categoriesService.categories.isEmpty {
             
             let dizzyImageView = UIImageView(image: UIImage(named: "dizzy"))
             view.addSubview(dizzyImageView)
@@ -60,24 +106,13 @@ final class CategorySelectController: UIViewController {
                 tableView.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 24),
                 tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
                 tableView.widthAnchor.constraint(equalToConstant: view.frame.width  - 32),
-                tableView.heightAnchor.constraint(equalToConstant: CGFloat(categories.count*75))])
+                tableView.heightAnchor.constraint(equalToConstant: CGFloat(categoriesService.categories.count*75))])
             
             tableView.delegate = self
             tableView.dataSource = self
         }
         
-    let addOrSelectButton: UIButton = {
-            let button: UIButton = UIButton(type: .system)
-            button.setTitleColor(.white, for: .normal)
-            button.backgroundColor = .black
-            button.layer.cornerRadius = 16
-            button.setTitle("Добавить категорию", for: .normal)
-            button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-            button.setTitleColor(.white, for: .normal)
-            
-            button.addTarget(self, action: #selector(addOrSelectButtonTouch), for: .touchUpInside)
-            return button
-        }()
+        
         
         view.addSubview(addOrSelectButton)
         
@@ -92,39 +127,43 @@ final class CategorySelectController: UIViewController {
     }
     
     @objc func addOrSelectButtonTouch() {
-        
+        delegate?.categoryDidSelected(category: categoriesService.categories[selectedRow ?? 0])
+        dismiss(animated: true, completion: nil)
     }
 }
 
 extension CategorySelectController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return categoriesService.categories.count
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return categories.count
+        return categoriesService.categories.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView.cellForRow(at: indexPath)?.accessoryType != .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
+        if let selected = selectedRow {
+            tableView.cellForRow(at: [0, selected])?.accessoryType = .none
         }
+        selectedRow = indexPath.row
+        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+        addOrSelectButton.isEnabled = true
+        addOrSelectButton.backgroundColor = .black
+        
     }
 }
 
 extension CategorySelectController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! AddTrackerCell
-        cell.updateTexts(title: categories[indexPath.row].name, subtitle: nil)
-        
+        cell.accessoryType = self.selectedRow == indexPath.row ? .checkmark : .none
+        cell.updateTexts(title: categoriesService.categories[indexPath.row].name, subtitle: nil)
         return cell
     }
 }
+

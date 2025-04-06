@@ -92,7 +92,7 @@ class TrackerCollectionViewCell: UICollectionViewCell {
             completeButton.heightAnchor.constraint(equalToConstant: 34)
         ])
         
-        print ("letter collection view cell initialized")
+        
     }
     
     required init?(coder: NSCoder) {

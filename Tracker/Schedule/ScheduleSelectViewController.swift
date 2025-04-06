@@ -2,19 +2,23 @@ import UIKit
 
 final class ScheduleSelectViewController: UIViewController {
     
-    private let daysOfWeek = ["Понедельник",
-                              "Вторник",
-                              "Среда",
-                              "Четверг",
-                              "Пятница",
-                              "Суббота",
-                              "Воскресенье"]
-    
+    private let daysOfWeek: [DayOfWeek] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
+    private var selectedDays: [DayOfWeek]
+    weak var delegate: ScheduleControllerDelegate?
     override func viewDidLoad() {
         super.viewDidLoad()
         configureView()
     }
     
+    init(selectedDays: [DayOfWeek], delegate: ScheduleControllerDelegate?) {
+        self.selectedDays = selectedDays
+        self.delegate = delegate
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     func configureView() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .white
@@ -77,6 +81,7 @@ final class ScheduleSelectViewController: UIViewController {
     }
     
     @objc func readyButtonTouch() {
+        delegate?.daysDidSelected(days: selectedDays)
         dismiss(animated: true)
     }
 }
@@ -97,8 +102,14 @@ extension ScheduleSelectViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! ScheduleSwitchCell
         cell.switchChangeState()
-   
-    }
+        let day = daysOfWeek[indexPath.row]
+        if let index = selectedDays.firstIndex(of: day) {
+                selectedDays.remove(at: index)
+            } else {
+            selectedDays.append(daysOfWeek[indexPath.row])
+        }
+        print(selectedDays)
+   }
 }
 
 extension ScheduleSelectViewController: UITableViewDataSource {
@@ -106,7 +117,14 @@ extension ScheduleSelectViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "scheduleSwitchCell", for: indexPath) as! ScheduleSwitchCell
-        cell.updateTexts(title: daysOfWeek[indexPath.row])
+        cell.switchView.isOn = selectedDays.contains(daysOfWeek[indexPath.row])
+        cell.updateTexts(title: daysOfWeek[indexPath.row].nameOfDay)
         return cell
+    }
+}
+
+extension ScheduleSelectViewController: ScheduleControllerDelegate {
+   func daysDidSelected(days: [DayOfWeek]) {
+       
     }
 }
