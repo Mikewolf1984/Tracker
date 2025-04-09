@@ -12,7 +12,6 @@ final class AddNewTrackerViewController: UIViewController {
     }
     
     weak var delegate: AddHabitOrTrackerDelegate?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         let  trackerCreateLabel: UILabel = {
@@ -91,7 +90,6 @@ final class AddNewTrackerViewController: UIViewController {
 extension AddNewTrackerViewController: AddHabitOrTrackerDelegate {
     func trackerDidCreated(tracker: Tracker, category: TrackerCategory)  {
         delegate?.trackerDidCreated(tracker: tracker, category: category)
-        print(tracker)
     }
     
     func trackerDidCanceled() {

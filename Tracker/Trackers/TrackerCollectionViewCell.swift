@@ -2,11 +2,14 @@ import UIKit
 
 class TrackerCollectionViewCell: UICollectionViewCell {
     
+    
     private let rectView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true
         view.backgroundColor = .blue
+        view.layer.borderWidth = 1
+        view.layer.borderColor = UIColor(named: "collectionCellBorderColor")?.cgColor 
         return view
     }()
     private let emojiLabel: UILabel = {

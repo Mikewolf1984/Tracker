@@ -90,7 +90,7 @@ final class AddHabitOrEventViewController: UIViewController {
     private var selectedDays: [DayOfWeek] = []
     private var selectedCategory: TrackerCategory?
     private var trackerType: TrackerType
-        private var tracker: Tracker?
+    private var tracker: Tracker?
     private var tableViewTopAnchor: NSLayoutConstraint?
     
     private let emojies = [ "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
@@ -100,7 +100,6 @@ final class AddHabitOrEventViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
         configureView()
         tableView.delegate = self
         tableView.dataSource = self
@@ -207,7 +206,8 @@ final class AddHabitOrEventViewController: UIViewController {
             name: nameTextField.text ?? "",
             color: (colors.randomElement())!!, //Используем force unwrap потому что точно знаем, что массив цветов не пустой
             emoji: emojies.randomElement() ?? "😄",
-            schedule: selectedDays
+            schedule: selectedDays,
+            date: nil
         )
         guard let category = selectedCategory else { return }
         delegate?.trackerDidCreated(tracker: newTracker, category: category)

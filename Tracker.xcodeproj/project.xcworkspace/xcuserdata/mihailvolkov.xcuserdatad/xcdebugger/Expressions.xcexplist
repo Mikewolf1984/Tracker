@@ -3,16 +3,41 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "TrackersViewController.showTrackersOrStub():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "CategoriesService.shared.categories">
+            </PersistentString>
+            <PersistentString
+               value = "filteredCategories">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.dateRefresh():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "CategoriesService.shared.categories">
+            </PersistentString>
+            <PersistentString
+               value = "currentDayOfWeek">
+            </PersistentString>
+            <PersistentString
+               value = "currentDate">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "TrackersViewController.viewDidLoad():TrackersViewController.swift">
          <PersistentStrings>
             <PersistentString
-               value = "collectionView">
+               value = "categories">
             </PersistentString>
             <PersistentString
                value = "TrackersViewController.shared.categories">
             </PersistentString>
             <PersistentString
-               value = "categories">
+               value = "collectionView">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -42,10 +67,10 @@
                value = "tableView.cellForRow(at: indexPath)?.textLabel?.text">
             </PersistentString>
             <PersistentString
-               value = "tableViewData[indexPath.row]">
+               value = "tableViewData">
             </PersistentString>
             <PersistentString
-               value = "tableViewData">
+               value = "tableViewData[indexPath.row]">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -72,10 +97,10 @@
                value = "cell?.titleText">
             </PersistentString>
             <PersistentString
-               value = "cell?.detailText">
+               value = "tableViewData[indexPath.row]">
             </PersistentString>
             <PersistentString
-               value = "tableViewData[indexPath.row]">
+               value = "cell?.detailText">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -89,6 +114,9 @@
                value = "topAnchor2.priority">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "main:AppDelegate.swift">
       </ContextState>
       <ContextState
          contextName = "AddHabitOrEventViewController.createButtonEnableCheck():AddHabitOrEventViewController.swift">
@@ -137,6 +165,17 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "TrackersViewController.trackerDidCreated(tracker:category:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "CategoriesService.shared.categories">
+            </PersistentString>
+            <PersistentString
+               value = "currentDayOfWeek">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "AddTrackerCell.init(style:reuseIdentifier:):AddTrackerCell.swift">
          <PersistentStrings>
             <PersistentString
@@ -144,6 +183,20 @@
             </PersistentString>
             <PersistentString
                value = "titleLabel.text">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.dateDidChanged():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Calendar.current.component(.weekday, from: currentDate)">
+            </PersistentString>
+            <PersistentString
+               value = "currentDayOfWeek">
+            </PersistentString>
+            <PersistentString
+               value = "filteredCategories">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
