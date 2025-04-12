@@ -4,7 +4,7 @@ import Foundation
 final class TrackersViewController: UIViewController {
     
     //MARK: - private properties
-      //Временные трекеры для проверки
+    //Временные трекеры для проверки
     private let tracker1: Tracker = .init(
         id: UUID(),
         type: .habit,
@@ -90,7 +90,7 @@ final class TrackersViewController: UIViewController {
         dateRefresh()
         showTrackersOrStub()
     }
-   
+    
     //MARK: - private methods
     private func showTrackersOrStub () {
         if filteredCategories.count > 0 {
@@ -219,8 +219,8 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! TrackerCollectionViewCell
-       let trackerToShow = filteredCategories[indexPath.section].trackers[indexPath.item]
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCollectionViewCell else {return UICollectionViewCell()}
+        let trackerToShow = filteredCategories[indexPath.section].trackers[indexPath.item]
         cell.configureCell(with: trackerToShow, daysCount: countOfCompletionsOfTracker(trackerToShow), isCompleted: (isTrackerCompletedToday(trackerToShow)), delegate: self)
         return cell
     }
@@ -230,12 +230,10 @@ extension TrackersViewController: UICollectionViewDataSource {
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             id = "header"
-        case UICollectionView.elementKindSectionFooter:
-            id = "footer"
         default:
             id = ""
         }
-        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as! TrackersSupplementaryView
+        guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? TrackersSupplementaryView else {return UICollectionReusableView()}
         view.titleLabel.text = filteredCategories[indexPath.section].name
         return view
     }
@@ -253,15 +251,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 12, left: 0, bottom: 16, right: 0)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let indexPath = IndexPath(row: 0, section: section)
-        let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
-        return headerView.systemLayoutSizeFitting(CGSize(width: collectionView.frame.width,
-                                                         height: UIView.layoutFittingExpandedSize.height),
-                                                  withHorizontalFittingPriority: .required,
-                                                  verticalFittingPriority: .fittingSizeLevel)
     }
 }
 
@@ -289,7 +278,7 @@ extension TrackersViewController: AddHabitOrTrackerDelegate {
 }
 
 extension TrackersViewController: CompleteButtonDelegate {
-   
+    
     func didTapCompleteButton(tracker: Tracker)
     {
         if isTrackerCompletedToday(tracker) {
