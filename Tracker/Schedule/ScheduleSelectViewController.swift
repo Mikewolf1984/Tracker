@@ -27,24 +27,19 @@ final class ScheduleSelectViewController: UIViewController {
         topLabel.font  = UIFont.systemFont(ofSize: 16, weight: .medium)
         topLabel.textColor = .black
         view.addSubview(topLabel)
-        
         topLabel.translatesAutoresizingMaskIntoConstraints = false
         topLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         topLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 28).isActive = true
-        
-        
         let tableView: UITableView = {
             let tableView: UITableView = UITableView()
             tableView.register(ScheduleSwitchCell.self, forCellReuseIdentifier: "scheduleSwitchCell")
             tableView.layer.cornerRadius = 16
             tableView.backgroundColor = UIColor(named: "textBackGroundColor")
-            tableView.separatorStyle = .singleLine
+            tableView.separatorStyle = .none
             return tableView
         }()
         view.addSubview(tableView)
-        
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 24),
             tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -53,8 +48,6 @@ final class ScheduleSelectViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
-        
-        
         let readyButton: UIButton = {
             let button: UIButton = UIButton(type: .system)
             button.setTitleColor(.white, for: .normal)
@@ -69,15 +62,11 @@ final class ScheduleSelectViewController: UIViewController {
         }()
         
         view.addSubview(readyButton)
-        
         readyButton.translatesAutoresizingMaskIntoConstraints = false
-        
         readyButton.centerXAnchor.constraint(equalTo: safeArea.centerXAnchor).isActive = true
         readyButton.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -50).isActive = true
         readyButton.widthAnchor.constraint(equalToConstant: view.frame.width-32).isActive = true
         readyButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        
-        
     }
     
     @objc func readyButtonTouch() {
@@ -108,7 +97,6 @@ extension ScheduleSelectViewController: UITableViewDelegate {
             } else {
             selectedDays.append(daysOfWeek[indexPath.row])
         }
-        print(selectedDays)
    }
 }
 
@@ -118,7 +106,7 @@ extension ScheduleSelectViewController: UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "scheduleSwitchCell", for: indexPath) as! ScheduleSwitchCell
         cell.switchView.isOn = selectedDays.contains(daysOfWeek[indexPath.row])
-        cell.updateTexts(title: daysOfWeek[indexPath.row].nameOfDay)
+        cell.updateTexts(title: daysOfWeek[indexPath.row].nameOfDay, isLastCell: indexPath.row == 7)
         return cell
     }
 }

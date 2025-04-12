@@ -42,13 +42,15 @@ class TrackerCollectionViewCell: UICollectionViewCell {
         button.layer.cornerRadius = 17
         button.layer.masksToBounds = true
         button.tintColor = .white
+        button.addTarget(self, action: #selector(toggleCompleteButton), for: .touchUpInside)
         return button
     }()
-    
+    private var isCompleted: Bool = false
+    private var tracker: Tracker?
+    weak var delegate: CompleteButtonDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         contentView.addSubview(rectView)
         rectView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -94,26 +96,42 @@ class TrackerCollectionViewCell: UICollectionViewCell {
             completeButton.widthAnchor.constraint(equalToConstant: 34),
             completeButton.heightAnchor.constraint(equalToConstant: 34)
         ])
-        
-        
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(with tracker: Tracker) {
+    func configureCell(with tracker: Tracker, daysCount: Int, isCompleted: Bool, delegate: CompleteButtonDelegate) {
+        self.delegate = delegate
+        self.tracker = tracker
         rectView.backgroundColor = tracker.color
         emojiLabel.text = tracker.emoji
         emojiLabel.backgroundColor = .white.withAlphaComponent(0.3)
         titleLabel.text = tracker.name
-        daysCounterLabel.text = "сколько-то"
-        completeButton.backgroundColor = tracker.color
-        completeButton.setImage(UIImage(named: "addButton"), for: .normal)
-}
-    func toggleCompleteButton() {
-        completeButton.setImage(UIImage(named: "doneWhite"), for: .normal)
-        completeButton.backgroundColor = completeButton.tintColor.withAlphaComponent(0.3)
+        var textDays: String = ""
+        switch daysCount {
+        case 1: textDays = "\(daysCount) день"
+        case 2, 3, 4: textDays = "\(daysCount) дня"
+        default: textDays = "\(daysCount) дней"
+        }
+        daysCounterLabel.text = textDays
+        redrawCompleteButton(isCompleted: isCompleted)
+    }
+    
+    func redrawCompleteButton(isCompleted: Bool) {
+        if isCompleted {
+            completeButton.setImage(UIImage(named: "doneWhite"), for: .normal)
+            completeButton.backgroundColor = tracker?.color.withAlphaComponent(0.3)
+        } else {
+            completeButton.setImage(UIImage(named: "addButton"), for: .normal)
+            completeButton.backgroundColor = tracker?.color
+        }
+    }
+    @objc func toggleCompleteButton() {
+        guard let tracker = tracker else { return }
+        delegate?.didTapCompleteButton(tracker: tracker)
+        redrawCompleteButton(isCompleted: !isCompleted)
     }
 }
 

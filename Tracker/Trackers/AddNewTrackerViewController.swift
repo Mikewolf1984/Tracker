@@ -2,8 +2,9 @@ import UIKit
 
 final class AddNewTrackerViewController: UIViewController {
     
-    init(delegate: AddHabitOrTrackerDelegate) {
+    init(delegate: AddHabitOrTrackerDelegate, categories: [TrackerCategory]) {
         self.delegate = delegate
+        self.categories = categories
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -12,6 +13,7 @@ final class AddNewTrackerViewController: UIViewController {
     }
     
     weak var delegate: AddHabitOrTrackerDelegate?
+    private let categories: [TrackerCategory]
     override func viewDidLoad() {
         super.viewDidLoad()
         let  trackerCreateLabel: UILabel = {
@@ -74,13 +76,13 @@ final class AddNewTrackerViewController: UIViewController {
     
     @objc func handleAddHabit() {
         
-        let addHabitOrEventViewController = AddHabitOrEventViewController(trackerType: .habit, delegate: self)
+        let addHabitOrEventViewController = AddHabitOrEventViewController(trackerType: .habit, delegate: self, categories: categories)
         addHabitOrEventViewController.modalPresentationStyle = .automatic
         present(addHabitOrEventViewController, animated: true, completion: nil)
     }
     
     @objc func handleAddIrregularEvent() {
-        let addHabitOrEventViewController = AddHabitOrEventViewController(trackerType: .irregularEvent, delegate: self)
+        let addHabitOrEventViewController = AddHabitOrEventViewController(trackerType: .irregularEvent, delegate: self, categories: categories)
         addHabitOrEventViewController.modalPresentationStyle = .automatic
         present(addHabitOrEventViewController, animated: true, completion: nil)
     }

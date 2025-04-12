@@ -4,13 +4,19 @@ class ScheduleSwitchCell : UITableViewCell {
     
     let switchView = UISwitch()
     private let textLabelView = UILabel()
+    private let separatorLine: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "divider"))
+        imageView.tintColor = UIColor(named: "ypGray")
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+  
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .textBackGround
         self.selectionStyle = .none
         self.accessoryType = .none
-        
         addSubview(switchView)
         switchView.onTintColor = .systemBlue
         switchView.translatesAutoresizingMaskIntoConstraints = false
@@ -18,16 +24,27 @@ class ScheduleSwitchCell : UITableViewCell {
         switchView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         switchView.isEnabled = true
         textLabelView.textColor = .black
-        textLabelView.font = .systemFont(ofSize: 17, weight: .medium)
+        textLabelView.font = .systemFont(ofSize: 17, weight: .regular)
         addSubview(textLabelView)
         textLabelView.translatesAutoresizingMaskIntoConstraints = false
         textLabelView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         textLabelView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
     }
     
-    func updateTexts(title: String?) {
+    func updateTexts(title: String?, isLastCell: Bool) {
         guard let title else {return}
         textLabelView.text = title
+        if !isLastCell {
+            addSubview(separatorLine)
+            separatorLine.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                separatorLine.centerXAnchor.constraint(equalTo: centerXAnchor),
+                separatorLine.topAnchor.constraint(equalTo: bottomAnchor),
+                separatorLine.leadingAnchor.constraint(equalTo: textLabelView.leadingAnchor),
+                separatorLine.trailingAnchor.constraint(equalTo: switchView.trailingAnchor),
+                separatorLine.heightAnchor.constraint(equalToConstant: 1)
+            ])
+        }
     }
     
     func switchChangeState()

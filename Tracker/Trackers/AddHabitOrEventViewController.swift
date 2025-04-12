@@ -2,9 +2,10 @@ import UIKit
 
 final class AddHabitOrEventViewController: UIViewController {
     
-    init(trackerType: TrackerType, delegate: AddHabitOrTrackerDelegate) {
+    init(trackerType: TrackerType, delegate: AddHabitOrTrackerDelegate, categories: [TrackerCategory]) {
         self.trackerType = trackerType
         self.delegate = delegate
+        self.categories = categories
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -17,7 +18,7 @@ final class AddHabitOrEventViewController: UIViewController {
         tableView.register(AddTrackerCell.self, forCellReuseIdentifier: "cell")
         tableView.layer.cornerRadius = 16
         tableView.backgroundColor = UIColor(named: "textBackGroundColor")
-        tableView.separatorStyle = .singleLine
+        tableView.separatorStyle = .none
         return tableView
     }()
     
@@ -59,7 +60,7 @@ final class AddHabitOrEventViewController: UIViewController {
     let createButton: UIButton = {
         let button: UIButton = UIButton(type: .system)
         button.setTitle("Создать", for: .normal)
-        button.backgroundColor = .lightGray
+        button.backgroundColor = UIColor(named: "ypGray") ?? .gray
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
@@ -75,6 +76,7 @@ final class AddHabitOrEventViewController: UIViewController {
         button.layer.borderWidth = 1
         button.setTitleColor(.red, for: .normal)
         button.layer.cornerRadius = 16
+        button.isEnabled = true
         button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -86,7 +88,7 @@ final class AddHabitOrEventViewController: UIViewController {
         return label
     }()
     
-    private var categoriesService  = CategoriesService.shared
+    private let categories: [TrackerCategory]
     private var selectedDays: [DayOfWeek] = []
     private var selectedCategory: TrackerCategory?
     private var trackerType: TrackerType
@@ -156,7 +158,6 @@ final class AddHabitOrEventViewController: UIViewController {
     
     
     private func updateConstraints() {
-        
         NSLayoutConstraint.activate([
             trackerTypeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             trackerTypeLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 28)]
@@ -191,7 +192,7 @@ final class AddHabitOrEventViewController: UIViewController {
         NSLayoutConstraint.activate([tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
                                      tableView.widthAnchor.constraint(equalToConstant: view.frame.width  - 32),
                                      tableView.heightAnchor.constraint(equalToConstant: CGFloat(tableViewData.count*75))])
-   }
+    }
     
     @objc func cancelButtonTapped() {
         delegate?.trackerDidCanceled()
@@ -199,7 +200,7 @@ final class AddHabitOrEventViewController: UIViewController {
     }
     
     @objc func createButtonTapped() {
-       
+        
         let newTracker: Tracker = .init(
             id: UUID(),
             type: trackerType,
@@ -207,7 +208,7 @@ final class AddHabitOrEventViewController: UIViewController {
             color: (colors.randomElement())!!, //Используем force unwrap потому что точно знаем, что массив цветов не пустой
             emoji: emojies.randomElement() ?? "😄",
             schedule: selectedDays,
-            date: nil
+            date: 0
         )
         guard let category = selectedCategory else { return }
         delegate?.trackerDidCreated(tracker: newTracker, category: category)
@@ -216,21 +217,22 @@ final class AddHabitOrEventViewController: UIViewController {
     
     @objc func didTapClearTextButton() {
         nameTextField.text = ""
+        hideLimitLabel()
     }
     
     func showLimitLabel() {
         
         limitLabel.isHidden = false
         tableViewTopAnchor?.constant = 48
-        UIView.animate(withDuration: 0.5) {
+        UIView.animate(withDuration: 0.2) {
             self.view.layoutIfNeeded()
         }
-        }
+    }
     
     func hideLimitLabel() {
         limitLabel.isHidden = true
         tableViewTopAnchor?.constant = 24
-        UIView.animate(withDuration: 0.5) {
+        UIView.animate(withDuration: 0.2) {
             self.view.layoutIfNeeded()
         }
     }
@@ -257,7 +259,7 @@ final class AddHabitOrEventViewController: UIViewController {
                 createButton.backgroundColor = .black
             } else {
                 createButton.isEnabled = false
-                createButton.backgroundColor = .gray
+                createButton.backgroundColor = UIColor(named: "ypGray") ?? .gray
             }
         case .irregularEvent:
             if conditionName && conditionCategory {
@@ -265,7 +267,7 @@ final class AddHabitOrEventViewController: UIViewController {
                 createButton.backgroundColor = .black
             } else {
                 createButton.isEnabled = false
-                createButton.backgroundColor = .gray
+                createButton.backgroundColor = UIColor(named: "ypGray") ?? .gray
             }
         }
     }
@@ -277,9 +279,9 @@ extension AddHabitOrEventViewController: UITableViewDelegate {
         return tableViewData.count
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
+    /*func numberOfSections(in tableView: UITableView) -> Int {
         return 2
-    }
+    }*/
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
@@ -290,8 +292,8 @@ extension AddHabitOrEventViewController: UITableViewDelegate {
             let scheduleSelectViewController = ScheduleSelectViewController(selectedDays: selectedDays, delegate: self)
             present(scheduleSelectViewController, animated: true, completion: nil)
         } else {
-            let index = categoriesService.categories.firstIndex(where: { $0.name == selectedCategory?.name }) ?? nil
-            let categorySelectController = CategorySelectController(selectedCategoryNumber: index, delegate: self)
+            let index = categories.firstIndex(where: { $0.name == selectedCategory?.name }) ?? nil
+            let categorySelectController = CategorySelectController(selectedCategoryNumber: index, delegate: self, categories: categories)
             present(categorySelectController, animated: true, completion: nil)
         }
     }
@@ -300,35 +302,38 @@ extension AddHabitOrEventViewController: UITableViewDelegate {
 extension AddHabitOrEventViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+        var daysString: String = ""
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! AddTrackerCell
         if (indexPath.row == tableViewData.count - 1)&&(trackerType == .habit) {
-            let daysString = selectedDays.map { day in
-                switch day {
-                case .monday:
-                    return("Пн")
-                case .tuesday:
-                    return("Вт")
-                case .wednesday:
-                    return("Ср")
-                case .thursday:
-                    return("Чт")
-                case .friday:
-                    return("Пт")
-                case .saturday:
-                    return("Сб")
-                case .sunday:
-                    return("Вс")
-                }
-            }.joined(separator: ", ")
-            
-            if daysString.isEmpty {
-                cell.updateTexts(title: "Расписание", subtitle: nil)
+            if selectedDays.count == 7 {
+                daysString = "Каждый день"
             } else {
-                cell.updateTexts(title: "Расписание", subtitle: daysString)
+                daysString = selectedDays.map { day in
+                    switch day {
+                    case .monday:
+                        return("Пн")
+                    case .tuesday:
+                        return("Вт")
+                    case .wednesday:
+                        return("Ср")
+                    case .thursday:
+                        return("Чт")
+                    case .friday:
+                        return("Пт")
+                    case .saturday:
+                        return("Сб")
+                    case .sunday:
+                        return("Вс")
+                    }
+                }.joined(separator: ", ")
+            }
+            if daysString.isEmpty {
+                cell.updateTexts(title: "Расписание", subtitle: nil, isLastCell: true)
+            } else {
+                cell.updateTexts(title: "Расписание", subtitle: daysString, isLastCell: true)
             }
         } else {
-            cell.updateTexts(title: "Категория", subtitle: selectedCategory?.name)
+            cell.updateTexts(title: "Категория", subtitle: selectedCategory?.name, isLastCell: false)
         }
         
         cell.accessoryType = .disclosureIndicator
@@ -360,19 +365,14 @@ extension AddHabitOrEventViewController: UITextFieldDelegate {
         createButtonEnableCheck()
         return true
     }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-       // nameTextField.resignFirstResponder()
-    }
 }
 
 extension AddHabitOrEventViewController: ScheduleControllerDelegate {
     func daysDidSelected(days: [DayOfWeek])
     {
-        selectedDays  = days
+        selectedDays  = days.sorted(by: { $0.rawValue < $1.rawValue })
         tableView.reloadData()
         createButtonEnableCheck()
-        
     }
 }
 

@@ -24,7 +24,6 @@ class TabBarViewController: UITabBarController {
         statisticsViewController.tabBarItem.image = UIImage(named: "statLogo")
         self.viewControllers = [trackersViewController, statisticsViewController]
         let topLine = CALayer()
-        
         topLine.backgroundColor = UIColor.gray.cgColor
         topLine.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 0.5)
         tabBar.layer.addSublayer(topLine)
