@@ -1,13 +1,18 @@
 import UIKit
 
-class AddTrackerCell: UITableViewCell {
+final class AddTrackerCell: UITableViewCell {
     
+    //MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .textBackGround
         self.accessoryType = .none
     }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
+    //MARK: - private properties
     private let separatorLine: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "divider"))
         imageView.tintColor = UIColor(named: "ypGray")
@@ -15,6 +20,7 @@ class AddTrackerCell: UITableViewCell {
         return imageView
     }()
     
+    //MARK: - public methods
     func updateTexts(title: String?, subtitle: String?, isLastCell: Bool) {
         if #available(iOS 14.0, *) {
             var content = self.defaultContentConfiguration()
@@ -41,9 +47,4 @@ class AddTrackerCell: UITableViewCell {
             ])
         }
     }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
 }

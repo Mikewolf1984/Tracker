@@ -1,17 +1,8 @@
 import UIKit
 
-class ScheduleSwitchCell : UITableViewCell {
+final class ScheduleSwitchCell : UITableViewCell {
     
-    let switchView = UISwitch()
-    private let textLabelView = UILabel()
-    private let separatorLine: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "divider"))
-        imageView.tintColor = UIColor(named: "ypGray")
-        imageView.contentMode = .scaleAspectFill
-        return imageView
-    }()
-  
-    
+    //MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .textBackGround
@@ -31,6 +22,22 @@ class ScheduleSwitchCell : UITableViewCell {
         textLabelView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
     }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    //MARK: - public properties
+    let switchView = UISwitch()
+    //MARK: - private properties
+    private let textLabelView = UILabel()
+    private let separatorLine: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "divider"))
+        imageView.tintColor = UIColor(named: "ypGray")
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
+    //MARK: - public methods
     func updateTexts(title: String?, isLastCell: Bool) {
         guard let title else {return}
         textLabelView.text = title
@@ -46,14 +53,8 @@ class ScheduleSwitchCell : UITableViewCell {
             ])
         }
     }
-    
     func switchChangeState()
     {
         switchView.isOn.toggle()
     }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
 }

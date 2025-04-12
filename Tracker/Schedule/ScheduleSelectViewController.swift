@@ -1,15 +1,8 @@
 import UIKit
 
+
 final class ScheduleSelectViewController: UIViewController {
-    
-    private let daysOfWeek: [DayOfWeek] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
-    private var selectedDays: [DayOfWeek]
-    weak var delegate: ScheduleControllerDelegate?
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureView()
-    }
-    
+    //MARK: - Init
     init(selectedDays: [DayOfWeek], delegate: ScheduleControllerDelegate?) {
         self.selectedDays = selectedDays
         self.delegate = delegate
@@ -19,7 +12,20 @@ final class ScheduleSelectViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    func configureView() {
+    
+    //MARK: - private properties
+    private let daysOfWeek: [DayOfWeek] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
+    private var selectedDays: [DayOfWeek]
+    weak var delegate: ScheduleControllerDelegate?
+    
+    //MARK: - override methods
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureView()
+    }
+    
+    //MARK: - private methods
+    private func configureView() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .white
         let topLabel = UILabel()
@@ -60,7 +66,6 @@ final class ScheduleSelectViewController: UIViewController {
             button.addTarget(self, action: #selector(readyButtonTouch), for: .touchUpInside)
             return button
         }()
-        
         view.addSubview(readyButton)
         readyButton.translatesAutoresizingMaskIntoConstraints = false
         readyButton.centerXAnchor.constraint(equalTo: safeArea.centerXAnchor).isActive = true
@@ -69,11 +74,14 @@ final class ScheduleSelectViewController: UIViewController {
         readyButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
     
+    //MARK: - objc methods
     @objc func readyButtonTouch() {
         delegate?.daysDidSelected(days: selectedDays)
         dismiss(animated: true)
     }
 }
+
+//MARK: - extensions
 
 extension ScheduleSelectViewController: UITableViewDelegate {
     
@@ -81,38 +89,28 @@ extension ScheduleSelectViewController: UITableViewDelegate {
         return daysOfWeek.count
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return daysOfWeek.count
-    }
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! ScheduleSwitchCell
         cell.switchChangeState()
         let day = daysOfWeek[indexPath.row]
         if let index = selectedDays.firstIndex(of: day) {
-                selectedDays.remove(at: index)
-            } else {
+            selectedDays.remove(at: index)
+        } else {
             selectedDays.append(daysOfWeek[indexPath.row])
         }
-   }
+    }
 }
 
 extension ScheduleSelectViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "scheduleSwitchCell", for: indexPath) as! ScheduleSwitchCell
         cell.switchView.isOn = selectedDays.contains(daysOfWeek[indexPath.row])
         cell.updateTexts(title: daysOfWeek[indexPath.row].nameOfDay, isLastCell: indexPath.row == 7)
         return cell
-    }
-}
-
-extension ScheduleSelectViewController: ScheduleControllerDelegate {
-   func daysDidSelected(days: [DayOfWeek]) {
-       
     }
 }

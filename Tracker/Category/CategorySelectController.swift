@@ -13,10 +13,8 @@ final class CategorySelectController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    //MARK: - public properties
-    
-    //MARK:  -private properties
-    
+  
+    //MARK: - private properties
     private weak var delegate: CategoryControllerDelegate?
     private let categories: [TrackerCategory]
     private var selectedRow: Int?
@@ -55,7 +53,6 @@ final class CategorySelectController: UIViewController {
             addOrSelectButton.backgroundColor = UIColor(named: "ypGray") ?? .gray
         }
     }
-    //MARK: - public methods
     
     //MARK: - private methods
     private func configureView() {

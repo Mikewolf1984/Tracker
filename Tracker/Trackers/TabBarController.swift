@@ -1,18 +1,14 @@
-//
-//  ViewController.swift
-//  Tracker
-//
-//  Created by Михаил Волков on 12.03.2025.
-//
-
 import UIKit
 
-class TabBarViewController: UITabBarController {
+final class TabBarViewController: UITabBarController {
+    
+    //MARK: - override methods
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTabBar()
     }
     
+    //MARK: - private methods
     private func configureTabBar() {
         view.backgroundColor = .white
         tabBar.isTranslucent = false
@@ -29,6 +25,3 @@ class TabBarViewController: UITabBarController {
         tabBar.layer.addSublayer(topLine)
     }
 }
-
-
-

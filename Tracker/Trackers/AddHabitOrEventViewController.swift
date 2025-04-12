@@ -2,6 +2,7 @@ import UIKit
 
 final class AddHabitOrEventViewController: UIViewController {
     
+    //MARK: - Init
     init(trackerType: TrackerType, delegate: AddHabitOrTrackerDelegate, categories: [TrackerCategory]) {
         self.trackerType = trackerType
         self.delegate = delegate
@@ -13,7 +14,8 @@ final class AddHabitOrEventViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    let tableView: UITableView = {
+    //MARK: - private properties
+    private let tableView: UITableView = {
         let tableView: UITableView = UITableView()
         tableView.register(AddTrackerCell.self, forCellReuseIdentifier: "cell")
         tableView.layer.cornerRadius = 16
@@ -22,8 +24,7 @@ final class AddHabitOrEventViewController: UIViewController {
         return tableView
     }()
     
-    
-    let nameTextField: UITextField = {
+    private let nameTextField: UITextField = {
         let textField: UITextField = UITextField()
         textField.placeholder = "Введите название трекера"
         textField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
@@ -46,7 +47,6 @@ final class AddHabitOrEventViewController: UIViewController {
         return textField
     }()
     
-    weak var delegate: AddHabitOrTrackerDelegate?
     private let limitLabel: UILabel = {
         let label = UILabel()
         label.textColor = .red
@@ -57,7 +57,7 @@ final class AddHabitOrEventViewController: UIViewController {
         return label
     }()
     
-    let createButton: UIButton = {
+    private let createButton: UIButton = {
         let button: UIButton = UIButton(type: .system)
         button.setTitle("Создать", for: .normal)
         button.backgroundColor = UIColor(named: "ypGray") ?? .gray
@@ -68,7 +68,7 @@ final class AddHabitOrEventViewController: UIViewController {
         return button
     }()
     
-    let cancelButton: UIButton = {
+    private let cancelButton: UIButton = {
         let button: UIButton = UIButton(type: .system)
         button.setTitle("Отменить", for: .normal)
         button.backgroundColor = .white
@@ -81,24 +81,27 @@ final class AddHabitOrEventViewController: UIViewController {
         return button
     }()
     
-    let  trackerTypeLabel: UILabel = {
+    private let  trackerTypeLabel: UILabel = {
         let label: UILabel = UILabel()
         label.textColor = .black
         label.font = .systemFont(ofSize: 16, weight: .medium)
         return label
     }()
     
+    weak var delegate: AddHabitOrTrackerDelegate?
     private let categories: [TrackerCategory]
     private var selectedDays: [DayOfWeek] = []
     private var selectedCategory: TrackerCategory?
-    private var trackerType: TrackerType
+    private let trackerType: TrackerType
     private var tracker: Tracker?
     private var tableViewTopAnchor: NSLayoutConstraint?
+    private var tableViewData = ["Категория","Расписание"]
     
     private let emojies = [ "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
-    private var tableViewData = ["Категория","Расписание"]
+    
     private let colors = [UIColor(named: "selColor1 1"),UIColor(named: "selColor1 2"),UIColor(named: "selColor1 3"),UIColor(named: "selColor1 4"),UIColor(named: "selColor1 5"), UIColor(named: "selColor1 6"),UIColor(named: "selColor1 7"),UIColor(named: "selColor1 8"),UIColor(named: "selColor1 9"),UIColor(named: "selColor1 10"), UIColor(named: "selColor1 11"),UIColor(named: "selColor1 12"),UIColor(named: "selColor1 13"),UIColor(named: "selColor1 14"),UIColor(named: "selColor1 15"),UIColor(named: "selColor1 16"),UIColor(named: "selColor1 17"),UIColor(named: "selColor1 18")]
     
+    //MARK: - override methods
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -108,21 +111,19 @@ final class AddHabitOrEventViewController: UIViewController {
         nameTextField.delegate = self
         
     }
+    
+    //MARK: - private methods
     private func configureView() {
-        
         switch trackerType {
         case .habit: tableViewData = ["Категория","Расписание"]
         case .irregularEvent: tableViewData = ["Категория"]
         }
-        
         view.addSubview(trackerTypeLabel)
         trackerTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         switch trackerType {
         case .habit: trackerTypeLabel.text = "Новая привычка"
         case .irregularEvent: trackerTypeLabel.text = "Новое нерегулярное событие"
         }
-        
         view.addSubview(cancelButton)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(createButton)
@@ -133,7 +134,6 @@ final class AddHabitOrEventViewController: UIViewController {
         limitLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        
         updateConstraints()
         
         /*        let emojiesCollectionView: UICollectionView = {
@@ -153,40 +153,32 @@ final class AddHabitOrEventViewController: UIViewController {
          return collectionView
          }()
          */
-        
     }
-    
     
     private func updateConstraints() {
         NSLayoutConstraint.activate([
             trackerTypeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             trackerTypeLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 28)]
         )
-        
         NSLayoutConstraint.activate([
             createButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             createButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -34),
             createButton.widthAnchor.constraint(equalTo: cancelButton.widthAnchor),
             createButton.heightAnchor.constraint(equalToConstant: 60)])
-        
         let viewWidth = view.frame.width
-        
         NSLayoutConstraint.activate([
             cancelButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             cancelButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -34),
             cancelButton.widthAnchor.constraint(equalToConstant: (viewWidth-48)/2),
             cancelButton.heightAnchor.constraint(equalToConstant: 60)])
-        
         NSLayoutConstraint.activate([
             limitLabel.topAnchor.constraint(equalTo: nameTextField.topAnchor, constant: 83),
             limitLabel.centerXAnchor.constraint(equalTo: nameTextField.centerXAnchor)])
-        
         NSLayoutConstraint.activate([
             nameTextField.topAnchor.constraint(equalTo: trackerTypeLabel.bottomAnchor, constant: 38),
             nameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             nameTextField.widthAnchor.constraint(equalToConstant: view.frame.width  - 32)])
-        
         tableViewTopAnchor = tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24)
         tableViewTopAnchor?.isActive = true
         NSLayoutConstraint.activate([tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -194,34 +186,7 @@ final class AddHabitOrEventViewController: UIViewController {
                                      tableView.heightAnchor.constraint(equalToConstant: CGFloat(tableViewData.count*75))])
     }
     
-    @objc func cancelButtonTapped() {
-        delegate?.trackerDidCanceled()
-        self.dismiss(animated: true)
-    }
-    
-    @objc func createButtonTapped() {
-        
-        let newTracker: Tracker = .init(
-            id: UUID(),
-            type: trackerType,
-            name: nameTextField.text ?? "",
-            color: (colors.randomElement())!!, //Используем force unwrap потому что точно знаем, что массив цветов не пустой
-            emoji: emojies.randomElement() ?? "😄",
-            schedule: selectedDays,
-            date: 0
-        )
-        guard let category = selectedCategory else { return }
-        delegate?.trackerDidCreated(tracker: newTracker, category: category)
-        self.dismiss(animated: true)
-    }
-    
-    @objc func didTapClearTextButton() {
-        nameTextField.text = ""
-        hideLimitLabel()
-    }
-    
-    func showLimitLabel() {
-        
+    private func showLimitLabel() {
         limitLabel.isHidden = false
         tableViewTopAnchor?.constant = 48
         UIView.animate(withDuration: 0.2) {
@@ -229,7 +194,7 @@ final class AddHabitOrEventViewController: UIViewController {
         }
     }
     
-    func hideLimitLabel() {
+    private func hideLimitLabel() {
         limitLabel.isHidden = true
         tableViewTopAnchor?.constant = 24
         UIView.animate(withDuration: 0.2) {
@@ -237,11 +202,10 @@ final class AddHabitOrEventViewController: UIViewController {
         }
     }
     
-    func createButtonEnableCheck() {
+    private func createButtonEnableCheck() {
         var conditionName: Bool
         var conditionCategory: Bool
         var conditionSchedule: Bool
-        
         if let text = nameTextField.text {
             conditionName = !text.isEmpty
         } else {
@@ -249,9 +213,7 @@ final class AddHabitOrEventViewController: UIViewController {
         }
         if let selectedCategory {conditionCategory = true
         } else {conditionCategory = false}
-        
         conditionSchedule = !selectedDays.isEmpty
-        
         switch trackerType {
         case .habit:
             if conditionName && conditionCategory && conditionSchedule {
@@ -271,17 +233,39 @@ final class AddHabitOrEventViewController: UIViewController {
             }
         }
     }
+    //MARK: - objc methods
+    @objc func cancelButtonTapped() {
+        delegate?.trackerDidCanceled()
+        self.dismiss(animated: true)
+    }
+    
+    @objc func createButtonTapped() {
+        let newTracker: Tracker = .init(
+            id: UUID(),
+            type: trackerType,
+            name: nameTextField.text ?? "",
+            color: (colors.randomElement())!!, //Используем force unwrap потому что точно знаем, что массив цветов не пустой
+            emoji: emojies.randomElement() ?? "😄",
+            schedule: selectedDays,
+            date: 0
+        )
+        guard let category = selectedCategory else { return }
+        delegate?.trackerDidCreated(tracker: newTracker, category: category)
+        self.dismiss(animated: true)
+    }
+    
+    @objc func didTapClearTextButton() {
+        nameTextField.text = ""
+        hideLimitLabel()
+    }
 }
+//MARK: - extensions
 
 extension AddHabitOrEventViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableViewData.count
     }
-    
-    /*func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
-    }*/
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
@@ -335,7 +319,6 @@ extension AddHabitOrEventViewController: UITableViewDataSource {
         } else {
             cell.updateTexts(title: "Категория", subtitle: selectedCategory?.name, isLastCell: false)
         }
-        
         cell.accessoryType = .disclosureIndicator
         return cell
     }
@@ -346,11 +329,8 @@ extension AddHabitOrEventViewController: UITextFieldDelegate {
         guard let text = textField.text else {
             return true
         }
-        
         let newText = (text as NSString).replacingCharacters(in: range, with: string)
-        
         let maxLength = 38
-        
         if newText.count <= maxLength {
             hideLimitLabel()
             return true
@@ -383,5 +363,3 @@ extension AddHabitOrEventViewController: CategoryControllerDelegate {
         createButtonEnableCheck()
     }
 }
-
-
