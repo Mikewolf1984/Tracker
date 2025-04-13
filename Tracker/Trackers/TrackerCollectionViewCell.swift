@@ -32,6 +32,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.layer.cornerRadius = 12
         label.layer.masksToBounds = true
+        label.textAlignment = .center
         return label
     }()
     private let titleLabel: UILabel = {
