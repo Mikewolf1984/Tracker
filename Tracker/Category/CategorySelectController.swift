@@ -141,7 +141,7 @@ extension CategorySelectController: UITableViewDelegate {
 
 extension CategorySelectController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! AddTrackerCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? AddTrackerCell else {return UITableViewCell()}
         cell.accessoryType = self.selectedRow == indexPath.row ? .checkmark : .none
         cell.updateTexts(title: categories[indexPath.row].name, subtitle: nil, isLastCell: indexPath.row == categories.count - 1)
         return cell

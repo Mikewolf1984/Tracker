@@ -94,7 +94,7 @@ extension ScheduleSelectViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as! ScheduleSwitchCell
+        guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleSwitchCell else {return}
         cell.switchChangeState()
         let day = daysOfWeek[indexPath.row]
         if let index = selectedDays.firstIndex(of: day) {
@@ -108,7 +108,7 @@ extension ScheduleSelectViewController: UITableViewDelegate {
 extension ScheduleSelectViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "scheduleSwitchCell", for: indexPath) as! ScheduleSwitchCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "scheduleSwitchCell", for: indexPath) as? ScheduleSwitchCell else {return UITableViewCell(style: .default, reuseIdentifier: "scheduleSwitchCell")}
         cell.switchView.isOn = selectedDays.contains(daysOfWeek[indexPath.row])
         cell.updateTexts(title: daysOfWeek[indexPath.row].nameOfDay, isLastCell: indexPath.row == 7)
         return cell

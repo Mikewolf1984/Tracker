@@ -81,11 +81,12 @@ final class TrackersViewController: UIViewController {
         } //
         
         dateFormatter.dateFormat = "yyyy-MM-dd"
+        collectionView.dataSource = self
+        collectionView.delegate = self
         collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
         collectionView.register(TrackersSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
         configureTrackersView()
-        collectionView.dataSource = self
-        collectionView.delegate = self
+        
         currentDate = datePickerButton.date
         dateRefresh()
         showTrackersOrStub()
@@ -222,8 +223,12 @@ extension TrackersViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCollectionViewCell else {return UICollectionViewCell()}
         let trackerToShow = filteredCategories[indexPath.section].trackers[indexPath.item]
         cell.configureCell(with: trackerToShow, daysCount: countOfCompletionsOfTracker(trackerToShow), isCompleted: (isTrackerCompletedToday(trackerToShow)), delegate: self)
+        
         return cell
     }
+}
+
+extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         var id: String
@@ -237,9 +242,6 @@ extension TrackersViewController: UICollectionViewDataSource {
         view.titleLabel.text = filteredCategories[indexPath.section].name
         return view
     }
-}
-
-extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: (collectionView.bounds.width - 8) / 2, height: 148)
@@ -251,6 +253,10 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 12, left: 0, bottom: 16, right: 0)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.bounds.width, height: 18)
     }
 }
 

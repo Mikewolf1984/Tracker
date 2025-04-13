@@ -287,7 +287,7 @@ extension AddHabitOrEventViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var daysString: String = ""
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! AddTrackerCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? AddTrackerCell else {return UITableViewCell()}
         if (indexPath.row == tableViewData.count - 1)&&(trackerType == .habit) {
             if selectedDays.count == 7 {
                 daysString = "Каждый день"
