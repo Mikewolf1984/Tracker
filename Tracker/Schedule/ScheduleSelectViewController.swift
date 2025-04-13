@@ -40,7 +40,7 @@ final class ScheduleSelectViewController: UIViewController {
             let tableView: UITableView = UITableView()
             tableView.register(ScheduleSwitchCell.self, forCellReuseIdentifier: "scheduleSwitchCell")
             tableView.layer.cornerRadius = 16
-            tableView.backgroundColor = UIColor(named: "textBackGroundColor")
+            tableView.backgroundColor = YPColors.ypBackGroundColor
             tableView.separatorStyle = .none
             return tableView
         }()
@@ -75,7 +75,7 @@ final class ScheduleSelectViewController: UIViewController {
     }
     
     //MARK: - objc methods
-    @objc func readyButtonTouch() {
+    @objc  private func readyButtonTouch() {
         delegate?.daysDidSelected(days: selectedDays)
         dismiss(animated: true)
     }
@@ -86,11 +86,11 @@ final class ScheduleSelectViewController: UIViewController {
 extension ScheduleSelectViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return daysOfWeek.count
+        daysOfWeek.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75
+        75
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -106,9 +106,9 @@ extension ScheduleSelectViewController: UITableViewDelegate {
 }
 
 extension ScheduleSelectViewController: UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "scheduleSwitchCell", for: indexPath) as? ScheduleSwitchCell else {return UITableViewCell(style: .default, reuseIdentifier: "scheduleSwitchCell")}
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "scheduleSwitchCell",for: indexPath)
+                as? ScheduleSwitchCell else {return UITableViewCell(style: .default, reuseIdentifier: "scheduleSwitchCell")}
         cell.switchView.isOn = selectedDays.contains(daysOfWeek[indexPath.row])
         cell.updateTexts(title: daysOfWeek[indexPath.row].nameOfDay, isLastCell: indexPath.row == 7)
         return cell

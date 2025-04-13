@@ -73,13 +73,12 @@ final class AddNewTrackerViewController: UIViewController {
     }
     
     //MARK: - objc methods
-    @objc func handleAddHabit() {
+    @objc  private func handleAddHabit() {
         let addHabitOrEventViewController = AddHabitOrEventViewController(trackerType: .habit, delegate: self, categories: categories)
         addHabitOrEventViewController.modalPresentationStyle = .automatic
         present(addHabitOrEventViewController, animated: true, completion: nil)
     }
-    
-    @objc func handleAddIrregularEvent() {
+    @objc  private func handleAddIrregularEvent() {
         let addHabitOrEventViewController = AddHabitOrEventViewController(trackerType: .irregularEvent, delegate: self, categories: categories)
         addHabitOrEventViewController.modalPresentationStyle = .automatic
         present(addHabitOrEventViewController, animated: true, completion: nil)
@@ -94,7 +93,7 @@ extension AddNewTrackerViewController: AddHabitOrTrackerDelegate {
     }
     func trackerDidCanceled() {
         delegate?.trackerDidCanceled()
-        self.dismiss(animated: true)
+        dismiss(animated: true)
     }
 }
 

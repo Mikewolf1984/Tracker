@@ -5,9 +5,9 @@ final class ScheduleSwitchCell : UITableViewCell {
     //MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-        self.backgroundColor = .textBackGround
-        self.selectionStyle = .none
-        self.accessoryType = .none
+        backgroundColor = .textBackGround
+        selectionStyle = .none
+        accessoryType = .none
         addSubview(switchView)
         switchView.onTintColor = .systemBlue
         switchView.translatesAutoresizingMaskIntoConstraints = false
@@ -32,7 +32,7 @@ final class ScheduleSwitchCell : UITableViewCell {
     private let textLabelView = UILabel()
     private let separatorLine: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "divider"))
-        imageView.tintColor = UIColor(named: "ypGray")
+        imageView.tintColor = YPColors.ypGray
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()

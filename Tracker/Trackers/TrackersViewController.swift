@@ -9,7 +9,7 @@ final class TrackersViewController: UIViewController {
         id: UUID(),
         type: .habit,
         name: "Первая привычка",
-        color: UIColor(named: "selColor1 1") ?? .red,
+        color: YPColors.ypColor1,
         emoji: "🐈",
         schedule: [.monday, .wednesday, .friday],
         date: 0
@@ -18,7 +18,7 @@ final class TrackersViewController: UIViewController {
         id: UUID(),
         type: .habit,
         name: "Вторая привычка",
-        color: UIColor(named: "selColor1 2") ?? .blue,
+        color: YPColors.ypColor2,
         emoji: "😇",
         schedule: [.tuesday, .thursday, .saturday],
         date: 0
@@ -27,7 +27,7 @@ final class TrackersViewController: UIViewController {
         id: UUID(),
         type: .habit,
         name: "Третья привычка",
-        color: UIColor(named: "selColor1 3") ?? .blue,
+        color: YPColors.ypColor3,
         emoji: "😇",
         schedule: [.saturday],
         date: 0
@@ -86,7 +86,6 @@ final class TrackersViewController: UIViewController {
         collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
         collectionView.register(TrackersSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
         configureTrackersView()
-        
         currentDate = datePickerButton.date
         dateRefresh()
         showTrackersOrStub()
@@ -193,13 +192,13 @@ final class TrackersViewController: UIViewController {
         }
     }
     //MARK: - objc methods
-    @objc func addButtonTouch() {
+    @objc  private func addButtonTouch() {
         let addNewTrackerViewController = AddNewTrackerViewController(delegate: self, categories: categories)
         addNewTrackerViewController.modalPresentationStyle = .automatic
         present(addNewTrackerViewController, animated: true, completion: nil)
     }
     
-    @objc func dateDidChanged() {
+    @objc  private func dateDidChanged() {
         currentDate = datePickerButton.date
         dateRefresh()
         showTrackersOrStub()
@@ -223,13 +222,11 @@ extension TrackersViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCollectionViewCell else {return UICollectionViewCell()}
         let trackerToShow = filteredCategories[indexPath.section].trackers[indexPath.item]
         cell.configureCell(with: trackerToShow, daysCount: countOfCompletionsOfTracker(trackerToShow), isCompleted: (isTrackerCompletedToday(trackerToShow)), delegate: self)
-        
         return cell
     }
 }
 
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
-    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         var id: String
         switch kind {
@@ -262,7 +259,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 
 extension TrackersViewController: AddHabitOrTrackerDelegate {
-    
     func trackerDidCreated(tracker: Tracker, category: TrackerCategory)  {
         let newTracker = Tracker(
             id: tracker.id, type: tracker.type, name: tracker.name, color: tracker.color, emoji: tracker.emoji, schedule: tracker.schedule, date: currentDate.toInt())
@@ -274,17 +270,16 @@ extension TrackersViewController: AddHabitOrTrackerDelegate {
         categories[categoryIndex] = updatedCategory
         dateRefresh()
         showTrackersOrStub()
-        self.dismiss(animated: true)
+        dismiss(animated: true)
     }
     
     func trackerDidCanceled() {
         collectionView.reloadData()
-        self.dismiss(animated: true)
+        dismiss(animated: true)
     }
 }
 
 extension TrackersViewController: CompleteButtonDelegate {
-    
     func didTapCompleteButton(tracker: Tracker)
     {
         if isTrackerCompletedToday(tracker) {
@@ -298,4 +293,3 @@ extension TrackersViewController: CompleteButtonDelegate {
         collectionView.reloadData()
     }
 }
-

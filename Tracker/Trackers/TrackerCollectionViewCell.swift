@@ -11,7 +11,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-   
+    
     //MARK: - private properties
     private var isCompleted: Bool = false
     private var tracker: Tracker?
@@ -59,7 +59,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
-   
+    
     //MARK: - public methods
     func configureCell(with tracker: Tracker, daysCount: Int, isCompleted: Bool, delegate: CompleteButtonDelegate) {
         self.delegate = delegate
@@ -133,7 +133,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     }
     
     //MARK: - objc methods
-    @objc func toggleCompleteButton() {
+    @objc  private func toggleCompleteButton() {
         guard let tracker = tracker else { return }
         delegate?.didTapCompleteButton(tracker: tracker)
         redrawCompleteButton(isCompleted: !isCompleted)

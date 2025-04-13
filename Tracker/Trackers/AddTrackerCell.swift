@@ -5,8 +5,8 @@ final class AddTrackerCell: UITableViewCell {
     //MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-        self.backgroundColor = .textBackGround
-        self.accessoryType = .none
+        backgroundColor = .textBackGround
+        accessoryType = .none
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -15,7 +15,7 @@ final class AddTrackerCell: UITableViewCell {
     //MARK: - private properties
     private let separatorLine: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "divider"))
-        imageView.tintColor = UIColor(named: "ypGray")
+        imageView.tintColor = YPColors.ypGray
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
@@ -23,7 +23,7 @@ final class AddTrackerCell: UITableViewCell {
     //MARK: - public methods
     func updateTexts(title: String?, subtitle: String?, isLastCell: Bool) {
         if #available(iOS 14.0, *) {
-            var content = self.defaultContentConfiguration()
+            var content = defaultContentConfiguration()
             if let title {
                 content.text = title }
             content.textProperties.font = .systemFont(ofSize: 17, weight: .regular)
@@ -31,10 +31,10 @@ final class AddTrackerCell: UITableViewCell {
                 content.secondaryText = subtitle
                 content.secondaryTextProperties.font = .systemFont(ofSize: 17,weight: .regular)
                 content.secondaryTextProperties.color = .lightGray }
-            self.contentConfiguration = content
+            contentConfiguration = content
         } else {
-            self.textLabel?.text = title
-            self.detailTextLabel?.text  = subtitle
+            textLabel?.text = title
+            detailTextLabel?.text  = subtitle
         }
         if !isLastCell {
             addSubview(separatorLine)

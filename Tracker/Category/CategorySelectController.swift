@@ -5,7 +5,7 @@ final class CategorySelectController: UIViewController {
     init(selectedCategoryNumber: Int?, delegate: CategoryControllerDelegate, categories: [TrackerCategory])
     {
         self.delegate = delegate
-        self.selectedRow = selectedCategoryNumber
+        selectedRow = selectedCategoryNumber
         self.categories  = categories
         super.init(nibName: nil, bundle: nil)
     }
@@ -13,7 +13,7 @@ final class CategorySelectController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-  
+    
     //MARK: - private properties
     private weak var delegate: CategoryControllerDelegate?
     private let categories: [TrackerCategory]
@@ -39,18 +39,19 @@ final class CategorySelectController: UIViewController {
         if categories.count > 0 {
             addOrSelectButton.setTitle("Выбрать категорию", for: .normal)
             addOrSelectButton.isEnabled = false
-            addOrSelectButton.backgroundColor = UIColor(named: "ypGray") ?? .gray
+            addOrSelectButton.backgroundColor = YPColors.ypGray
+            
         } else {
             addOrSelectButton.setTitle("Добавить категорию", for: .normal)
             addOrSelectButton.isEnabled = true
             addOrSelectButton.backgroundColor = .black
         }
-        if let selectedRow {
+        if selectedRow != nil  {
             addOrSelectButton.isEnabled = true
             addOrSelectButton.backgroundColor = .black
         } else {
             addOrSelectButton.isEnabled = false
-            addOrSelectButton.backgroundColor = UIColor(named: "ypGray") ?? .gray
+            addOrSelectButton.backgroundColor = YPColors.ypGray
         }
     }
     
@@ -90,7 +91,7 @@ final class CategorySelectController: UIViewController {
                 let tableView: UITableView = UITableView()
                 tableView.register(AddTrackerCell.self, forCellReuseIdentifier: "cell")
                 tableView.layer.cornerRadius = 16
-                tableView.backgroundColor = UIColor(named: "textBackGroundColor")
+                tableView.backgroundColor = YPColors.ypBackGroundColor
                 tableView.separatorStyle = .none
                 return tableView
             }()
@@ -113,7 +114,7 @@ final class CategorySelectController: UIViewController {
     }
     //MARK: - objc methods
     
-    @objc func addOrSelectButtonTouch() {
+    @objc private func addOrSelectButtonTouch() {
         delegate?.categoryDidSelected(category: categories[selectedRow ?? 0])
         dismiss(animated: true, completion: nil)
     }
@@ -123,10 +124,10 @@ final class CategorySelectController: UIViewController {
 
 extension CategorySelectController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        categories.count
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75
+        75
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let selected = selectedRow {
@@ -141,10 +142,10 @@ extension CategorySelectController: UITableViewDelegate {
 
 extension CategorySelectController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? AddTrackerCell else {return UITableViewCell()}
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell",
+                                                       for: indexPath) as? AddTrackerCell else {return UITableViewCell()}
         cell.accessoryType = self.selectedRow == indexPath.row ? .checkmark : .none
         cell.updateTexts(title: categories[indexPath.row].name, subtitle: nil, isLastCell: indexPath.row == categories.count - 1)
         return cell
     }
 }
-

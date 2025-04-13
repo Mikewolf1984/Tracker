@@ -19,8 +19,9 @@ final class AddHabitOrEventViewController: UIViewController {
         let tableView: UITableView = UITableView()
         tableView.register(AddTrackerCell.self, forCellReuseIdentifier: "cell")
         tableView.layer.cornerRadius = 16
-        tableView.backgroundColor = UIColor(named: "textBackGroundColor")
+        tableView.backgroundColor = YPColors.ypBackGroundColor
         tableView.separatorStyle = .none
+        tableView.keyboardDismissMode = .onDrag
         return tableView
     }()
     
@@ -31,7 +32,7 @@ final class AddHabitOrEventViewController: UIViewController {
         let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftView = leftPaddingView
         textField.leftViewMode = .always
-        textField.backgroundColor = UIColor(named: "textBackGroundColor")
+        textField.backgroundColor = YPColors.ypBackGroundColor
         textField.layer.cornerRadius = 16
         
         let clearTextButton = UIButton(type: .custom)
@@ -60,7 +61,7 @@ final class AddHabitOrEventViewController: UIViewController {
     private let createButton: UIButton = {
         let button: UIButton = UIButton(type: .system)
         button.setTitle("Создать", for: .normal)
-        button.backgroundColor = UIColor(named: "ypGray") ?? .gray
+        button.backgroundColor = YPColors.ypGray
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
@@ -99,7 +100,10 @@ final class AddHabitOrEventViewController: UIViewController {
     
     private let emojies = [ "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     
-    private let colors = [UIColor(named: "selColor1 1"),UIColor(named: "selColor1 2"),UIColor(named: "selColor1 3"),UIColor(named: "selColor1 4"),UIColor(named: "selColor1 5"), UIColor(named: "selColor1 6"),UIColor(named: "selColor1 7"),UIColor(named: "selColor1 8"),UIColor(named: "selColor1 9"),UIColor(named: "selColor1 10"), UIColor(named: "selColor1 11"),UIColor(named: "selColor1 12"),UIColor(named: "selColor1 13"),UIColor(named: "selColor1 14"),UIColor(named: "selColor1 15"),UIColor(named: "selColor1 16"),UIColor(named: "selColor1 17"),UIColor(named: "selColor1 18")]
+    private let colors = [YPColors.ypColor1, YPColors.ypColor2, YPColors.ypColor3, YPColors.ypColor4, YPColors.ypColor5,
+                          YPColors.ypColor6, YPColors.ypColor7, YPColors.ypColor8, YPColors.ypColor9, YPColors.ypColor10,
+                          YPColors.ypColor11, YPColors.ypColor12, YPColors.ypColor13, YPColors.ypColor15, YPColors.ypColor15,
+                          YPColors.ypColor16, YPColors.ypColor17, YPColors.ypColor18]
     
     //MARK: - override methods
     override func viewDidLoad() {
@@ -109,6 +113,10 @@ final class AddHabitOrEventViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         nameTextField.delegate = self
+        let tapGesture = UITapGestureRecognizer(target: self,
+                                                action: #selector(hideKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        self.view.addGestureRecognizer(tapGesture)
         
     }
     
@@ -135,24 +143,6 @@ final class AddHabitOrEventViewController: UIViewController {
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         updateConstraints()
-        
-        /*        let emojiesCollectionView: UICollectionView = {
-         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-         layout.scrollDirection = .vertical
-         layout.itemSize = CGSize(width: 52, height: 52)
-         let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-         return collectionView
-         }()
-         
-         
-         let colorsCollectionView: UICollectionView = {
-         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-         layout.scrollDirection = .vertical
-         layout.itemSize = CGSize(width: 40, height: 40)
-         let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-         return collectionView
-         }()
-         */
     }
     
     private func updateConstraints() {
@@ -221,7 +211,7 @@ final class AddHabitOrEventViewController: UIViewController {
                 createButton.backgroundColor = .black
             } else {
                 createButton.isEnabled = false
-                createButton.backgroundColor = UIColor(named: "ypGray") ?? .gray
+                createButton.backgroundColor = YPColors.ypGray
             }
         case .irregularEvent:
             if conditionName && conditionCategory {
@@ -229,34 +219,39 @@ final class AddHabitOrEventViewController: UIViewController {
                 createButton.backgroundColor = .black
             } else {
                 createButton.isEnabled = false
-                createButton.backgroundColor = UIColor(named: "ypGray") ?? .gray
+                createButton.backgroundColor = YPColors.ypGray
             }
         }
     }
     //MARK: - objc methods
-    @objc func cancelButtonTapped() {
+    @objc  private func cancelButtonTapped() {
         delegate?.trackerDidCanceled()
-        self.dismiss(animated: true)
+        dismiss(animated: true)
     }
     
-    @objc func createButtonTapped() {
+    @objc  private func createButtonTapped() {
+        
         let newTracker: Tracker = .init(
             id: UUID(),
             type: trackerType,
             name: nameTextField.text ?? "",
-            color: (colors.randomElement())!!, //Используем force unwrap потому что точно знаем, что массив цветов не пустой
+            color: colors.randomElement() ?? .systemBlue,
             emoji: emojies.randomElement() ?? "😄",
             schedule: selectedDays,
             date: 0
         )
         guard let category = selectedCategory else { return }
         delegate?.trackerDidCreated(tracker: newTracker, category: category)
-        self.dismiss(animated: true)
+        dismiss(animated: true)
     }
     
-    @objc func didTapClearTextButton() {
+    @objc private  func didTapClearTextButton() {
         nameTextField.text = ""
         hideLimitLabel()
+    }
+    @objc private func hideKeyboard() {
+        self.view.endEditing(true)
+        createButtonEnableCheck()
     }
 }
 //MARK: - extensions
@@ -264,11 +259,11 @@ final class AddHabitOrEventViewController: UIViewController {
 extension AddHabitOrEventViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableViewData.count
+        tableViewData.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75
+        75
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         nameTextField.resignFirstResponder()
@@ -287,7 +282,9 @@ extension AddHabitOrEventViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var daysString: String = ""
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? AddTrackerCell else {return UITableViewCell()}
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+                as? AddTrackerCell else {return UITableViewCell()}
+        
         if (indexPath.row == tableViewData.count - 1)&&(trackerType == .habit) {
             if selectedDays.count == 7 {
                 daysString = "Каждый день"
