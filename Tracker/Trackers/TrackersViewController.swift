@@ -261,7 +261,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 extension TrackersViewController: AddHabitOrTrackerDelegate {
     func trackerDidCreated(tracker: Tracker, category: TrackerCategory)  {
         let newTracker = Tracker(
-            id: tracker.id, type: tracker.type, name: tracker.name, color: tracker.color, emoji: tracker.emoji, schedule: tracker.schedule, date: currentDate.toInt())
+            id: tracker.id, type: tracker.type, name: tracker.name, color: tracker.color, emoji: tracker.emoji, schedule: tracker.schedule, date: tracker.type == .irregularEvent ? currentDate.toInt() : 0)
         
         var updatedTrackers = category.trackers
         updatedTrackers.append(newTracker)

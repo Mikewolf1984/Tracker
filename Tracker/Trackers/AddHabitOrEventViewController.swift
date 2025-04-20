@@ -15,6 +15,13 @@ final class AddHabitOrEventViewController: UIViewController {
     }
     
     //MARK: - private properties
+    private let emojiOrColorCollectionView: UICollectionView = {
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        return collectionView
+    }()
     private let tableView: UITableView = {
         let tableView: UITableView = UITableView()
         tableView.register(AddTrackerCell.self, forCellReuseIdentifier: "cell")
@@ -97,13 +104,15 @@ final class AddHabitOrEventViewController: UIViewController {
     private var tracker: Tracker?
     private var tableViewTopAnchor: NSLayoutConstraint?
     private var tableViewData = ["Категория","Расписание"]
-    
+    private let collectionViewIdentifier: String = "EmojiOrColorCollectionViewCell"
     private let emojies = [ "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     
     private let colors = [YPColors.ypColor1, YPColors.ypColor2, YPColors.ypColor3, YPColors.ypColor4, YPColors.ypColor5,
                           YPColors.ypColor6, YPColors.ypColor7, YPColors.ypColor8, YPColors.ypColor9, YPColors.ypColor10,
-                          YPColors.ypColor11, YPColors.ypColor12, YPColors.ypColor13, YPColors.ypColor15, YPColors.ypColor15,
+                          YPColors.ypColor11, YPColors.ypColor12, YPColors.ypColor13, YPColors.ypColor14, YPColors.ypColor15,
                           YPColors.ypColor16, YPColors.ypColor17, YPColors.ypColor18]
+    private var emojiIndexPath: IndexPath?
+    private var colorIndexPath: IndexPath?
     
     //MARK: - override methods
     override func viewDidLoad() {
@@ -112,6 +121,10 @@ final class AddHabitOrEventViewController: UIViewController {
         configureView()
         tableView.delegate = self
         tableView.dataSource = self
+        emojiOrColorCollectionView.register(EmojiOrColorCell.self, forCellWithReuseIdentifier: collectionViewIdentifier)
+        emojiOrColorCollectionView.register(TrackersSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
+        emojiOrColorCollectionView.delegate = self
+        emojiOrColorCollectionView.dataSource = self
         nameTextField.delegate = self
         let tapGesture = UITapGestureRecognizer(target: self,
                                                 action: #selector(hideKeyboard))
@@ -142,7 +155,11 @@ final class AddHabitOrEventViewController: UIViewController {
         limitLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emojiOrColorCollectionView)
+        emojiOrColorCollectionView.translatesAutoresizingMaskIntoConstraints = false
         updateConstraints()
+        
+        
     }
     
     private func updateConstraints() {
@@ -174,6 +191,12 @@ final class AddHabitOrEventViewController: UIViewController {
         NSLayoutConstraint.activate([tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
                                      tableView.widthAnchor.constraint(equalToConstant: view.frame.width  - 32),
                                      tableView.heightAnchor.constraint(equalToConstant: CGFloat(tableViewData.count*75))])
+        
+        NSLayoutConstraint.activate([emojiOrColorCollectionView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 32),
+                                     emojiOrColorCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor ,constant: -110),
+                                     emojiOrColorCollectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                     emojiOrColorCollectionView.widthAnchor.constraint(equalToConstant: view.frame.width  - 32)])
+        
     }
     
     private func showLimitLabel() {
@@ -196,6 +219,7 @@ final class AddHabitOrEventViewController: UIViewController {
         var conditionName: Bool
         var conditionCategory: Bool
         var conditionSchedule: Bool
+        var conditionColorAndEmoji: Bool
         if let text = nameTextField.text {
             conditionName = !text.isEmpty
         } else {
@@ -204,9 +228,10 @@ final class AddHabitOrEventViewController: UIViewController {
         if let selectedCategory {conditionCategory = true
         } else {conditionCategory = false}
         conditionSchedule = !selectedDays.isEmpty
+        conditionColorAndEmoji = (emojiIndexPath != nil) && (colorIndexPath != nil)
         switch trackerType {
         case .habit:
-            if conditionName && conditionCategory && conditionSchedule {
+            if conditionName && conditionCategory && conditionSchedule && conditionColorAndEmoji {
                 createButton.isEnabled = true
                 createButton.backgroundColor = .black
             } else {
@@ -214,7 +239,7 @@ final class AddHabitOrEventViewController: UIViewController {
                 createButton.backgroundColor = YPColors.ypGray
             }
         case .irregularEvent:
-            if conditionName && conditionCategory {
+            if conditionName && conditionCategory && conditionColorAndEmoji {
                 createButton.isEnabled = true
                 createButton.backgroundColor = .black
             } else {
@@ -230,13 +255,12 @@ final class AddHabitOrEventViewController: UIViewController {
     }
     
     @objc  private func createButtonTapped() {
-        
         let newTracker: Tracker = .init(
             id: UUID(),
             type: trackerType,
             name: nameTextField.text ?? "",
-            color: colors.randomElement() ?? .systemBlue,
-            emoji: emojies.randomElement() ?? "😄",
+            color: colors[colorIndexPath?.item ?? 0],
+            emoji: emojies[emojiIndexPath?.item ?? 0],
             schedule: selectedDays,
             date: 0
         )
@@ -358,5 +382,80 @@ extension AddHabitOrEventViewController: CategoryControllerDelegate {
         selectedCategory = category
         tableView.reloadData()
         createButtonEnableCheck()
+    }
+}
+
+extension AddHabitOrEventViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cellType: EmojiOrColorType = indexPath.section == 0 ? .emojiType  : .colorType
+        if cellType == .emojiType {
+            emojiIndexPath = indexPath
+        } else {
+            colorIndexPath = indexPath
+        }
+        let cell = collectionView.cellForItem(at: indexPath) as! EmojiOrColorCell
+        let text = emojies[indexPath.item]
+        let color = colors[indexPath.item]
+        if indexPath.section == 0 {
+            cell.configureView(cellText: text, cellColor: nil, isCellSelected: indexPath == emojiIndexPath)
+        } else {
+            cell.configureView(cellText: nil, cellColor: color, isCellSelected: indexPath == colorIndexPath)
+        }
+        collectionView.reloadData()
+        createButtonEnableCheck()
+    }
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        2
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 12, left: 0, bottom: 16, right: 0)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        var id: String
+        switch kind {
+        case UICollectionView.elementKindSectionHeader:
+            id = "header"
+        default:
+            id = ""
+        }
+        guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? TrackersSupplementaryView else {return UICollectionReusableView()}
+        if indexPath.section == 0 {
+            view.titleLabel.text = "Emoji"
+        }  else {
+            view.titleLabel.text = "Цвет"
+        }
+        
+        return view
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.bounds.width, height: 18)
+    }
+}
+
+extension AddHabitOrEventViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        18
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        8
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        CGSize(width: 52, height: 52)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collectionViewIdentifier, for: indexPath) as! EmojiOrColorCell
+        let text = emojies[indexPath.item]
+        let color = colors[indexPath.item]
+        if indexPath.section == 0 {
+            cell.configureView(cellText: text, cellColor: nil, isCellSelected: indexPath == emojiIndexPath)
+        } else {
+            cell.configureView(cellText: nil, cellColor: color, isCellSelected: indexPath == colorIndexPath)
+        }
+        return cell
     }
 }

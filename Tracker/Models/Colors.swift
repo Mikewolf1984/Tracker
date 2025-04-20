@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 
 enum YPColors {
+    static let ypBorderColor = UIColor(named: "collectionCellBorderColor") ?? .systemGray
     static let ypBackGroundColor = UIColor(named: "textBackGroundColor") ?? .systemBackground
     static let ypBlue = UIColor(named: "ypBlue") ?? .systemBlue
     static let ypGray = UIColor(named: "ypGray") ?? .systemGray
