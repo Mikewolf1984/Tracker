@@ -80,6 +80,7 @@ final class TrackersViewController: UIViewController {
             categories.append(cat2)
         } //
         
+        
         dateFormatter.dateFormat = "yyyy-MM-dd"
         collectionView.dataSource = self
         collectionView.delegate = self
