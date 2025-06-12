@@ -2,22 +2,22 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24D81" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="TrackerCategoryCD" representedClassName="TrackerCategoryCD" syncable="YES" codeGenerationType="class">
         <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="trackers" optional="YES" attributeType="Transformable"/>
+        <attribute name="trackers" optional="YES" attributeType="Transformable" valueTransformerName="Tracker.TrackerCategoryTransformer"/>
         <relationship name="relationship3" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerCD" inverseName="relationship2" inverseEntity="TrackerCD"/>
     </entity>
     <entity name="TrackerCD" representedClassName="TrackerCD" syncable="YES" codeGenerationType="class">
-        <attribute name="color" attributeType="Transformable"/>
-        <attribute name="date" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="color" attributeType="String"/>
+        <attribute name="date" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="emoji" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isHabit" attributeType="Boolean" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
-        <attribute name="schedule" attributeType="Transformable"/>
-        <attribute name="type" attributeType="Transformable"/>
+        <attribute name="schedule" attributeType="String"/>
         <relationship name="relationship1" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerRecordCD" inverseName="relationship4" inverseEntity="TrackerRecordCD"/>
         <relationship name="relationship2" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerCategoryCD" inverseName="relationship3" inverseEntity="TrackerCategoryCD"/>
     </entity>
     <entity name="TrackerRecordCD" representedClassName="TrackerRecordCD" syncable="YES" codeGenerationType="class">
-        <attribute name="date" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="date" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <relationship name="relationship4" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerCD" inverseName="relationship1" inverseEntity="TrackerCD"/>
     </entity>

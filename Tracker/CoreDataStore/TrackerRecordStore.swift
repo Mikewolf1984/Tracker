@@ -1,22 +1,51 @@
 import CoreData
 import UIKit
 
-final class TrackerRecordStore {
+final class TrackerRecordStore: NSObject {
     //MARK: - Init
-     convenience init() {
-         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-         self.init(context: context)
-     }
- init(context: NSManagedObjectContext) {
-         self.context = context
-     }
-     //MARK: - public properties
-     //MARK: - private properties
-     private let context: NSManagedObjectContext
-     //MARK: - override methods
-     //MARK: - public methods
-     //MARK: - private methods
-     //MARK: - objc methods
-     //MARK: - extensions
-
- }
+    override convenience init() {
+        let context = AppDelegate.shared.persistentContainer.viewContext
+        try! self.init(context: context)
+    }
+    init(context: NSManagedObjectContext) throws {
+        self.context = context
+        let fetchRequest: NSFetchRequest<TrackerRecordCD> = TrackerRecordCD.fetchRequest()
+        let trackerRecordsCD = try context.fetch(fetchRequest) as [TrackerRecordCD]
+        if trackerRecordsCD.isEmpty { return }
+        for record in trackerRecordsCD {
+            guard let id = record.id else { return }
+            records.insert(TrackerRecord(id: id, date: record.date))
+        }
+    }
+    //MARK: - public properties
+    static let shared = TrackerRecordStore()
+    var records: Set<TrackerRecord> = []
+    //MARK: - private properties
+    private var context: NSManagedObjectContext
+    //MARK: - override methods
+    //MARK: - public methods
+    func addRecord(_ record: TrackerRecord) throws {
+        let trackerRecordCoreData = TrackerRecordCD(context: context)
+        trackerRecordCoreData.date = record.date
+        trackerRecordCoreData.id = record.id
+        try context.save()
+    }
+    func removeRecord(_ record: TrackerRecord) throws {
+        let fetchRequest: NSFetchRequest<TrackerRecordCD> = TrackerRecordCD.fetchRequest()
+        fetchRequest.resultType = .managedObjectIDResultType
+        let records = try context.execute(fetchRequest) as! NSAsynchronousFetchResult<NSFetchRequestResult>
+        let idS = records.finalResult as! [NSManagedObjectID]
+        if idS.isEmpty { return }
+        for id in idS {
+            let recordCD = context.object(with: id) as! TrackerRecordCD
+            if (recordCD.id == record.id) && (recordCD.date == record.date) {
+                context.delete(recordCD)
+            }
+        }
+        try context.save()
+    }
+    //MARK: - private methods
+    //MARK: - objc methods
+    //MARK: - extensions
+    
+}

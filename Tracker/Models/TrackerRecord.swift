@@ -2,5 +2,5 @@ import Foundation
 
 struct TrackerRecord: Hashable {
     let id: UUID
-    let date: UInt
+    let date: Int32
 }

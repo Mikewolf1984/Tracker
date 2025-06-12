@@ -4,43 +4,19 @@ import Foundation
 final class TrackersViewController: UIViewController {
     
     //MARK: - private properties
-    //Временные трекеры для проверки
-    private let tracker1: Tracker = .init(
-        id: UUID(),
-        type: .habit,
-        name: "Первая привычка",
-        color: YPColors.ypColor1,
-        emoji: "🐈",
-        schedule: [.monday, .wednesday, .friday],
-        date: 0
-    )
-    private let tracker2: Tracker = .init(
-        id: UUID(),
-        type: .habit,
-        name: "Вторая привычка",
-        color: YPColors.ypColor2,
-        emoji: "😇",
-        schedule: [.tuesday, .thursday, .saturday],
-        date: 0
-    )
-    private let tracker3: Tracker = .init(
-        id: UUID(),
-        type: .habit,
-        name: "Третья привычка",
-        color: YPColors.ypColor3,
-        emoji: "😇",
-        schedule: [.saturday],
-        date: 0
-    ) //
     
     private var currentDate: Date = Date()
     private var currentDayOfWeek: DayOfWeek = .monday
     private let daysOfWeek: [DayOfWeek] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     private let cellIdentifier = "trackercell"
-    private var completedTrackers: Set<TrackerRecord> = []
-    private var categories: [TrackerCategory] = []
+    private var completedTrackers: Set<TrackerRecord> = TrackerRecordStore.shared.records
+    private var categories: [TrackerCategory] = TrackerCategoryStore.shared.categories
     private var filteredCategories: [TrackerCategory] = []
     private var dateFormatter = DateFormatter()
+    
+    private let trackerStore = TrackerStore()
+    private let trackerCategoryStore = TrackerCategoryStore()
+    private let trackerRecordStore = TrackerRecordStore()
     
     private  let trackersLabel = UILabel()
     private  let searchField = UISearchBar()
@@ -72,7 +48,7 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // временные категории
-        if !categories.contains(where: { $0.name == "Хобби" }) {
+       /* if !categories.contains(where: { $0.name == "Хобби" }) {
             let cat1: TrackerCategory = .init(name: "Хобби", trackers: [tracker1,tracker2])
             categories.append(cat1)}
         if !categories.contains(where: { $0.name == "Обязанности" }) {
@@ -80,7 +56,12 @@ final class TrackersViewController: UIViewController {
             categories.append(cat2)
         } //
         
-        
+        */
+        let cat1: TrackerCategory = .init(name: "Хобби", trackers: [])
+        if categories.isEmpty {
+            categories.append(cat1)
+        }
+        //TrackerCategoryStore.shared.saveCategoryToCD(category: cat1, tracker: nil)
         dateFormatter.dateFormat = "yyyy-MM-dd"
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -157,7 +138,7 @@ final class TrackersViewController: UIViewController {
     }
     
     private func isTrackerCompletedToday(_ tracker: Tracker) -> Bool {
-        let trackerRecord = TrackerRecord(id: tracker.id, date: currentDate.toInt())
+        let trackerRecord = TrackerRecord(id: tracker.id, date: Int32(currentDate.toInt()))
         return completedTrackers.contains(trackerRecord)
     }
     
@@ -260,9 +241,9 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 
 extension TrackersViewController: AddHabitOrTrackerDelegate {
-    func trackerDidCreated(tracker: Tracker, category: TrackerCategory)  {
+    func trackerDidCreated(tracker: Tracker, category: TrackerCategory) {
         let newTracker = Tracker(
-            id: tracker.id, type: tracker.type, name: tracker.name, color: tracker.color, emoji: tracker.emoji, schedule: tracker.schedule, date: tracker.type == .irregularEvent ? currentDate.toInt() : 0)
+            id: tracker.id, type: tracker.type, name: tracker.name, color: tracker.color, emoji: tracker.emoji, schedule: tracker.schedule, date: Int32(tracker.type == .irregularEvent ? currentDate.toInt() : 0))
         
         var updatedTrackers = category.trackers
         updatedTrackers.append(newTracker)
@@ -271,6 +252,8 @@ extension TrackersViewController: AddHabitOrTrackerDelegate {
         categories[categoryIndex] = updatedCategory
         dateRefresh()
         showTrackersOrStub()
+        try! trackerStore.addNewTracker(newTracker)
+        try! trackerCategoryStore.saveCategoryToCD(category: updatedCategory, tracker: newTracker)
         dismiss(animated: true)
     }
     
@@ -284,11 +267,14 @@ extension TrackersViewController: CompleteButtonDelegate {
     func didTapCompleteButton(tracker: Tracker)
     {
         if isTrackerCompletedToday(tracker) {
-            completedTrackers.remove(TrackerRecord(id: tracker.id, date: currentDate.toInt()))
+            let record = TrackerRecord(id: tracker.id, date: Int32(currentDate.toInt()))
+            completedTrackers.remove(record)
+            try! TrackerRecordStore.shared.removeRecord(record)
         } else {
             if currentDate.toInt() <= Date().toInt() {
-                let newRecord = TrackerRecord(id: tracker.id, date: currentDate.toInt())
+                let newRecord = TrackerRecord(id: tracker.id, date: Int32(currentDate.toInt()))
                 completedTrackers.insert(newRecord)
+                try! TrackerRecordStore.shared.addRecord(newRecord)
             }
         }
         collectionView.reloadData()

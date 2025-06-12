@@ -30,5 +30,24 @@
             </PersistentString>
          </PersistentStrings>
       </ContextState>
+      <ContextState
+         contextName = "TrackerStore.init(context:):TrackerStore.swift">
+      </ContextState>
+      <ContextState
+         contextName = "TrackerStore.addNewTracker(_:):TrackerStore.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "context">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.trackerDidCreated(tracker:category:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "trackers">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
    </ContextStates>
 </VariablesViewState>
