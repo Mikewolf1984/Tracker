@@ -262,7 +262,7 @@ final class AddHabitOrEventViewController: UIViewController {
             color: colors[colorIndexPath?.item ?? 0],
             emoji: emojies[emojiIndexPath?.item ?? 0],
             schedule: selectedDays,
-            date: 0
+            date: Date()
         )
         guard let category = selectedCategory else { return }
         delegate?.trackerDidCreated(tracker: newTracker, category: category)

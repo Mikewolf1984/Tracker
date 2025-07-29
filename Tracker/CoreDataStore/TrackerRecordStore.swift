@@ -14,7 +14,8 @@ final class TrackerRecordStore: NSObject {
         if trackerRecordsCD.isEmpty { return }
         for record in trackerRecordsCD {
             guard let id = record.id else { return }
-            records.insert(TrackerRecord(id: id, date: record.date))
+            guard let date = record.date else { return }
+            records.insert(TrackerRecord(id: id, date: date))
         }
     }
     //MARK: - public properties
@@ -43,6 +44,13 @@ final class TrackerRecordStore: NSObject {
             }
         }
         try context.save()
+    }
+    func recordsCount(for tracker: Tracker) -> Int {
+        let fetchRequest = NSFetchRequest<TrackerRecordCD>(entityName: "TrackerRecordCD")
+        fetchRequest.resultType = .managedObjectIDResultType
+        fetchRequest.predicate = NSPredicate(format: "%K == \(TrackersViewController.shared.currentDate)", #keyPath(TrackerRecordCD.date))
+        let records = try! context.execute(fetchRequest) as! NSAsynchronousFetchResult<NSFetchRequestResult>
+        return records.finalResult?.count ?? 0
     }
     //MARK: - private methods
     //MARK: - objc methods

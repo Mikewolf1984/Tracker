@@ -27,7 +27,7 @@ final class CategorySelectController: UIViewController {
         button.setTitle("", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(addOrSelectButtonTouch), for: .touchUpInside)
+        button.addTarget(CategorySelectController.self, action: #selector(addOrSelectButtonTouch), for: .touchUpInside)
         return button
     }()
     //MARK: - override methods

@@ -3,10 +3,14 @@ import Foundation
 
 final class TrackersViewController: UIViewController {
     
+    //MARK: - public properties
+    static let shared = TrackersViewController()
+    var currentDate: Date = Date()
+    var currentDayOfWeek: DayOfWeek = .monday
+    
     //MARK: - private properties
     
-    private var currentDate: Date = Date()
-    private var currentDayOfWeek: DayOfWeek = .monday
+   
     private let daysOfWeek: [DayOfWeek] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     private let cellIdentifier = "trackercell"
     private var completedTrackers: Set<TrackerRecord> = TrackerRecordStore.shared.records
@@ -17,6 +21,8 @@ final class TrackersViewController: UIViewController {
     private let trackerStore = TrackerStore()
     private let trackerCategoryStore = TrackerCategoryStore()
     private let trackerRecordStore = TrackerRecordStore()
+    
+    private let dataProvider = TrackersDataProvider()
     
     private  let trackersLabel = UILabel()
     private  let searchField = UISearchBar()
@@ -138,7 +144,7 @@ final class TrackersViewController: UIViewController {
     }
     
     private func isTrackerCompletedToday(_ tracker: Tracker) -> Bool {
-        let trackerRecord = TrackerRecord(id: tracker.id, date: Int32(currentDate.toInt()))
+        let trackerRecord = TrackerRecord(id: tracker.id, date: currentDate)
         return completedTrackers.contains(trackerRecord)
     }
     
@@ -163,7 +169,7 @@ final class TrackersViewController: UIViewController {
         for category in categories {
             var filteredTrackers: [Tracker] = []
             for tracker in category.trackers {
-                if tracker.schedule.contains(currentDayOfWeek)||tracker.date == currentDate.toInt() {
+                if tracker.schedule.contains(currentDayOfWeek)||(tracker.date == currentDate) {
                     filteredTrackers.append(tracker)
                 }
             }
@@ -191,19 +197,20 @@ final class TrackersViewController: UIViewController {
 //MARK:  - Extensions
 
 extension TrackersViewController: UICollectionViewDataSource {
-    
+   
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return filteredCategories[section].trackers.count
+        dataProvider.numberOfRowsInSection(section)
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        filteredCategories.count
+        dataProvider.numberOfSections
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCollectionViewCell else {return UICollectionViewCell()}
-        let trackerToShow = filteredCategories[indexPath.section].trackers[indexPath.item]
-        cell.configureCell(with: trackerToShow, daysCount: countOfCompletionsOfTracker(trackerToShow), isCompleted: (isTrackerCompletedToday(trackerToShow)), delegate: self)
+        let trackerObjectToShow = dataProvider.object(at: indexPath)
+        cell.configureCell(with: trackerObjectToShow.tracker, daysCount: trackerObjectToShow.daysCount, isCompleted: trackerObjectToShow.isComleted, delegate: self)
         return cell
     }
 }
@@ -243,7 +250,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 extension TrackersViewController: AddHabitOrTrackerDelegate {
     func trackerDidCreated(tracker: Tracker, category: TrackerCategory) {
         let newTracker = Tracker(
-            id: tracker.id, type: tracker.type, name: tracker.name, color: tracker.color, emoji: tracker.emoji, schedule: tracker.schedule, date: Int32(tracker.type == .irregularEvent ? currentDate.toInt() : 0))
+            id: tracker.id, type: tracker.type, name: tracker.name, color: tracker.color, emoji: tracker.emoji, schedule: tracker.schedule, date: currentDate)
         
         var updatedTrackers = category.trackers
         updatedTrackers.append(newTracker)
@@ -267,12 +274,12 @@ extension TrackersViewController: CompleteButtonDelegate {
     func didTapCompleteButton(tracker: Tracker)
     {
         if isTrackerCompletedToday(tracker) {
-            let record = TrackerRecord(id: tracker.id, date: Int32(currentDate.toInt()))
+            let record = TrackerRecord(id: tracker.id, date: currentDate)
             completedTrackers.remove(record)
             try! TrackerRecordStore.shared.removeRecord(record)
         } else {
-            if currentDate.toInt() <= Date().toInt() {
-                let newRecord = TrackerRecord(id: tracker.id, date: Int32(currentDate.toInt()))
+            if currentDate <= Date() {
+                let newRecord = TrackerRecord(id: tracker.id, date: currentDate)
                 completedTrackers.insert(newRecord)
                 try! TrackerRecordStore.shared.addRecord(newRecord)
             }

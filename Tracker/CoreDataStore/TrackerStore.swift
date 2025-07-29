@@ -2,19 +2,27 @@ import CoreData
 import UIKit
 
 
+protocol TrackerDataStore {
+    var context: NSManagedObjectContext { get }
+    func addNewTracker(_ tracker: Tracker) throws
+    //TODO: func delete(_ record: NSManagedObject) throws
+}
 
-final class TrackerStore: NSObject {
+
+
+final class TrackerStore: NSObject, TrackerDataStore {
     //MARK: - Init
     convenience override init() {
         let context = AppDelegate.shared.persistentContainer.viewContext
         try! self.init(context: context)
     }
     init(context: NSManagedObjectContext) throws {
-        self.context = context
+       self.context = context
         self.trackers = []
         super.init()
         let fetchRequest: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
         let trackersCD = try context.fetch(fetchRequest)
+    
         for trackerCD in trackersCD {
             let tracker = Tracker(
                 id: trackerCD.id ?? UUID(),
@@ -23,18 +31,20 @@ final class TrackerStore: NSObject {
                 color: uiColorMarshalling.color(from: trackerCD.color ?? "#000000"),
                 emoji: trackerCD.emoji ?? "",
                 schedule: scheduleTransformer.schedule(from: trackerCD.schedule ?? ""),
-                date: trackerCD.date
+                date: trackerCD.date ?? Date()
             )
             trackers.append(tracker)
         }
     }
     
+    
     //MARK: - public properties
     static let shared = TrackerStore()
     var trackers: [Tracker]
+    var context: NSManagedObjectContext
     //MARK: - private properties
     
-    private var context: NSManagedObjectContext
+    
     private let uiColorMarshalling = UIColorMarshalling()
     private let scheduleTransformer  = ScheduleTransformer()
    
@@ -52,11 +62,22 @@ final class TrackerStore: NSObject {
         try context.save()
     }
     
+    func cdToTracker(_ cd: TrackerCD) -> Tracker {
+        return Tracker(id: cd.id ?? UUID(),
+                       type: cd.isHabit ? TrackerType.habit : TrackerType.irregularEvent,
+                       name: cd.name ?? "Имя не найдено",
+                       color: uiColorMarshalling.color(from: cd.color ?? "#FFFFFF"),
+                       emoji: cd.emoji ?? "",
+                       schedule: scheduleTransformer.schedule(from: cd.schedule ?? ""),
+                       date: cd.date ?? Date()
+        )
+    }
     
     //MARK: - private methods
     
     
     //MARK: - objc methods
     //MARK: - extensions
+  
     
 }

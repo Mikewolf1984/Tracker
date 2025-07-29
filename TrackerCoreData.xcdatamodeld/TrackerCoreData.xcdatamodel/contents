@@ -3,22 +3,22 @@
     <entity name="TrackerCategoryCD" representedClassName="TrackerCategoryCD" syncable="YES" codeGenerationType="class">
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="trackers" optional="YES" attributeType="Transformable" valueTransformerName="Tracker.TrackerCategoryTransformer"/>
-        <relationship name="relationship3" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerCD" inverseName="relationship2" inverseEntity="TrackerCD"/>
+        <relationship name="categoryToTrackerRS" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerCD" inverseName="trackerToCategoryRS" inverseEntity="TrackerCD"/>
     </entity>
     <entity name="TrackerCD" representedClassName="TrackerCD" syncable="YES" codeGenerationType="class">
         <attribute name="color" attributeType="String"/>
-        <attribute name="date" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="emoji" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isHabit" attributeType="Boolean" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="schedule" attributeType="String"/>
-        <relationship name="relationship1" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerRecordCD" inverseName="relationship4" inverseEntity="TrackerRecordCD"/>
-        <relationship name="relationship2" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerCategoryCD" inverseName="relationship3" inverseEntity="TrackerCategoryCD"/>
+        <relationship name="trackerToCategoryRS" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TrackerCategoryCD" inverseName="categoryToTrackerRS" inverseEntity="TrackerCategoryCD"/>
+        <relationship name="trackerToRecordRS" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TrackerRecordCD" inverseName="recordToTrackerRS" inverseEntity="TrackerRecordCD"/>
     </entity>
     <entity name="TrackerRecordCD" representedClassName="TrackerRecordCD" syncable="YES" codeGenerationType="class">
-        <attribute name="date" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="relationship4" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerCD" inverseName="relationship1" inverseEntity="TrackerCD"/>
+        <relationship name="recordToTrackerRS" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="TrackerCD" inverseName="trackerToRecordRS" inverseEntity="TrackerCD"/>
     </entity>
 </model>

@@ -7,5 +7,5 @@ struct Tracker {
     let color: UIColor
     let emoji: String
     let schedule: [DayOfWeek]
-    let date: Int32
+    let date: Date
 }
