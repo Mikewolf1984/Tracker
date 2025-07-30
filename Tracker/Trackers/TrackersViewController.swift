@@ -9,7 +9,26 @@ final class TrackersViewController: UIViewController {
     var currentDayOfWeek: DayOfWeek = .monday
     
     //MARK: - private properties
-    
+    //Временные трекеры для проверки
+    private let tracker1: Tracker = .init(
+        id: UUID(),
+        type: .habit,
+        name: "Первая привычка",
+        color: YPColors.ypColor1,
+        emoji: "🐈",
+        schedule: [.monday, .wednesday, .friday],
+        date: Date()
+    )
+    private let tracker2: Tracker = .init(
+        id: UUID(),
+        type: .habit,
+        name: "Вторая привычка",
+        color: YPColors.ypColor2,
+        emoji: "😇",
+        schedule: [.tuesday, .thursday, .saturday],
+        date: Date()
+    )
+
    
     private let daysOfWeek: [DayOfWeek] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     private let cellIdentifier = "trackercell"
@@ -53,21 +72,23 @@ final class TrackersViewController: UIViewController {
     //MARK: - override methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        // временные категории
-       /* if !categories.contains(where: { $0.name == "Хобби" }) {
+        
+        
+        //временные категории
+        if !categories.contains(where: { $0.name == "Хобби" }) {
             let cat1: TrackerCategory = .init(name: "Хобби", trackers: [tracker1,tracker2])
             categories.append(cat1)}
-        if !categories.contains(where: { $0.name == "Обязанности" }) {
+        /*if !categories.contains(where: { $0.name == "Обязанности" }) {
             let cat2: TrackerCategory = .init(name: "Обязанности", trackers: [tracker3])
             categories.append(cat2)
         } //
         
         */
-        let cat1: TrackerCategory = .init(name: "Хобби", trackers: [])
+        let cat1: TrackerCategory = .init(name: "Хобби", trackers: [tracker1,tracker2])
         if categories.isEmpty {
             categories.append(cat1)
         }
-        //TrackerCategoryStore.shared.saveCategoryToCD(category: cat1, tracker: nil)
+        //TrackerCategoryStore.shared.saveCategoryToCD(category: cat1, tracker: tracker1)
         dateFormatter.dateFormat = "yyyy-MM-dd"
         collectionView.dataSource = self
         collectionView.delegate = self
