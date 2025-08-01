@@ -3,6 +3,126 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "TrackerRecordStore.isCompletedInDate(for:date:):TrackerRecordStore.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "records">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.numberOfSections(in:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "dataProvider.numberOfSections">
+            </PersistentString>
+            <PersistentString
+               value = "dataProvider.numberOfRowsInSection(0)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersDataProvider.object(at:):TrackersDataProvider.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "indexPath.item">
+            </PersistentString>
+            <PersistentString
+               value = "ids">
+            </PersistentString>
+            <PersistentString
+               value = "id">
+            </PersistentString>
+            <PersistentString
+               value = "object.categoryToTrackerRS?.allObjects">
+            </PersistentString>
+            <PersistentString
+               value = "object.name">
+            </PersistentString>
+            <PersistentString
+               value = "tracker">
+            </PersistentString>
+            <PersistentString
+               value = "trackers">
+            </PersistentString>
+            <PersistentString
+               value = "todayTrackersForSection(day: TrackersViewController.shared.currentDayOfWeek, section: indexPath.section)[indexPath.row]">
+            </PersistentString>
+            <PersistentString
+               value = "object.trackerToRecordRS?.date">
+            </PersistentString>
+            <PersistentString
+               value = "trackersToday">
+            </PersistentString>
+            <PersistentString
+               value = "idS">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.showTrackersOrStub():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentDayOfWeek">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackerStore.init(context:):TrackerStore.swift">
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.collectionView(_:cellForItemAt:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentDateString">
+            </PersistentString>
+            <PersistentString
+               value = "todayTrackersForSection(.friday,0)">
+            </PersistentString>
+            <PersistentString
+               value = "currentDayOfWeek">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersDataProvider.object(at:day:):TrackersDataProvider.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "TrackersViewController.shared.currentDateString">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersDataProvider.numberOfRowsInSection(day:section:):TrackersDataProvider.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "todayTrackersForSection(day: day, section: section).count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.didTapCompleteButton(tracker:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentDate">
+            </PersistentString>
+            <PersistentString
+               value = "currentDateString">
+            </PersistentString>
+            <PersistentString
+               value = "isTrackerCompletedToday(tracker)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "main:AppDelegate.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "AddHabitOrEventViewController.collectionView(_:cellForItemAt:):AddHabitOrEventViewController.swift">
          <PersistentStrings>
             <PersistentString
@@ -23,15 +143,12 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "AddHabitOrEventViewController.collectionView(_:didSelectItemAt:):AddHabitOrEventViewController.swift">
+         contextName = "TrackersDataProvider.todayTrackersForSection(day:section:):TrackersDataProvider.swift">
          <PersistentStrings>
             <PersistentString
-               value = "emojiIndexPath">
+               value = "TrackersViewController.shared.currentDayOfWeek">
             </PersistentString>
          </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "TrackerStore.init(context:):TrackerStore.swift">
       </ContextState>
       <ContextState
          contextName = "TrackerStore.addNewTracker(_:):TrackerStore.swift">
@@ -46,6 +163,72 @@
          <PersistentStrings>
             <PersistentString
                value = "trackers">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "AddHabitOrEventViewController.collectionView(_:didSelectItemAt:):AddHabitOrEventViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "emojiIndexPath">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackerStore.getTrackerById(_:):TrackerStore.swift">
+      </ContextState>
+      <ContextState
+         contextName = "TrackerCollectionViewCell.toggleCompleteButton():TrackerCollectionViewCell.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "tracker">
+            </PersistentString>
+            <PersistentString
+               value = "isCompleted">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackerStore.getAllTrackers():TrackerStore.swift">
+      </ContextState>
+      <ContextState
+         contextName = "TrackersDataProvider.numberOfRowsInSection(_:):TrackersDataProvider.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = " fetchedResultsController.sections?.count ?? 0">
+            </PersistentString>
+            <PersistentString
+               value = "trackers.count">
+            </PersistentString>
+            <PersistentString
+               value = "fetchedResultsController.sections?[section]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.dateDidChanged():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentDayOfWeek">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.collectionView(_:numberOfItemsInSection:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "dataProvider.numberOfRowsInSection(day: currentDayOfWeek, section: section)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersDataProvider.numberOfSections.getter:TrackersDataProvider.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "fetchedResultsController.sections?.count">
+            </PersistentString>
+            <PersistentString
+               value = "fetchedResultsController.sections?[0].numberOfObjects">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

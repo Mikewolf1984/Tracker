@@ -50,7 +50,7 @@ final class AddNewTrackerViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(trackerCreateLabel)
         view.addSubview(habitCreateButton)
-        view.addSubview(irregularEventCreateButton)
+        //TODO later view.addSubview(irregularEventCreateButton)
         trackerCreateLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             trackerCreateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -63,13 +63,13 @@ final class AddNewTrackerViewController: UIViewController {
             habitCreateButton.widthAnchor.constraint(equalToConstant: 335),
             habitCreateButton.heightAnchor.constraint(equalToConstant: 60)
         ])
-        irregularEventCreateButton.translatesAutoresizingMaskIntoConstraints = false
+        /*TODO later irregularEventCreateButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             irregularEventCreateButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             irregularEventCreateButton.topAnchor.constraint(equalTo: habitCreateButton.bottomAnchor, constant: 16),
             irregularEventCreateButton.widthAnchor.constraint(equalToConstant: 335),
             irregularEventCreateButton.heightAnchor.constraint(equalToConstant: 60)
-        ])
+        ]) */
     }
     
     //MARK: - objc methods

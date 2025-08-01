@@ -4,52 +4,46 @@ import CoreData
 
 struct TrackerObject {
     var tracker: Tracker
-    var isComleted: Bool
+    var isCompleted: Bool
     var daysCount: Int
 }
 protocol DataProviderDelegate: AnyObject {
-   // func didUpdate(_ update: TrackerStoreUpdate)
+    // func didUpdate(_ update: TrackerStoreUpdate)
 }
 
 protocol DataProviderProtocol {
     var numberOfSections: Int { get }
-    func numberOfRowsInSection(_ section: Int) -> Int
-    func object(at: IndexPath) throws -> TrackerObject
+    func todayTrackersForSection (day: DayOfWeek, section: Int) -> [Tracker]
+    func numberOfRowsInSection(day: DayOfWeek, section: Int) -> Int
+    func object(at indexPath: IndexPath, day: DayOfWeek, currentDate: String) -> TrackerObject
     func addTracker(_ tracker: Tracker) throws
     //TODO: func deleteRecord(at indexPath: IndexPath) throws
 }
 
-// MARK: - DataProvider
-final class TrackersDataProvider: NSObject {
 
+final class TrackersDataProvider: NSObject {
+    
     enum DataProviderError: Error {
         case failedToInitializeContext
     }
     
-    //weak var delegate: DataProviderDelegate?
+    //MARK: private properties
     
     private let context = AppDelegate.shared.persistentContainer.viewContext
-    private let dataStore = TrackerStore()
-    
-    
-    private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCD> = {
-
-        let fetchRequest = NSFetchRequest<TrackerCD>(entityName: "TrackerCD")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: false)]
-        
-        
+    private let trackersDataStore = TrackerStore()
+    private let trackerRecordStore = TrackerRecordStore()
+    private let categoryDataStore = TrackerCategoryStore()
+    private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCD> = {
+        let fetchRequest = NSFetchRequest<TrackerCategoryCD>(entityName: "TrackerCategoryCD")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: false)]
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
                                                                   managedObjectContext: context,
-                                                                  sectionNameKeyPath: nil,
+                                                                  sectionNameKeyPath: "name",
                                                                   cacheName: nil)
         fetchedResultsController.delegate = self
         try? fetchedResultsController.performFetch()
         return fetchedResultsController
     }()
-    
-    
-    
-  
 }
 
 // MARK: - DataProviderProtocol
@@ -58,38 +52,70 @@ extension TrackersDataProvider: DataProviderProtocol {
         fetchedResultsController.sections?.count ?? 0
     }
     
-    func numberOfRowsInSection(_ section: Int) -> Int {
-        fetchedResultsController.sections?[section].numberOfObjects ?? 0
+    func todayTrackersForSection (day: DayOfWeek, section: Int) -> [Tracker] {
+        var result: [Tracker] = []
+        do
+        {
+            let trackerCatIDs = fetchedResultsController.object(at: IndexPath(row: 0, section: section) ).trackers as! [UUID]
+            for trackerId in trackerCatIDs {
+                let tracker = try TrackerStore.shared.cdToTracker(TrackerStore.shared.getTrackerById(trackerId)!)
+                if tracker.schedule.contains(day) {
+                    result.append(tracker)
+                }
+            }
+        } catch {
+            print ("Error fetching data: \(error)")
+        }
+        return result
     }
     
-    func object(at indexPath: IndexPath) -> TrackerObject {
-        let object = fetchedResultsController.object(at: indexPath)
-        let tracker = TrackerStore.shared.cdToTracker(object)
-        let isCompleted = object.trackerToRecordRS?.date == TrackersViewController.shared.currentDate
+    func numberOfRowsInSection(day: DayOfWeek, section: Int) -> Int {
+        todayTrackersForSection(day: day, section: section).count
+    }
+    
+    func object(at indexPath: IndexPath, day: DayOfWeek, currentDate: String) -> TrackerObject {
+        let tracker1: Tracker = .init(
+            id: UUID(),
+            type: .habit,
+            name: "Заглушка",
+            color: YPColors.ypColor1,
+            emoji: "🐈",
+            schedule: [.monday],
+            date: ""
+        )
+        let trackerStub = TrackerObject(tracker: tracker1, isCompleted: false, daysCount: 0)
+        
+        let trackersToday = todayTrackersForSection(day: day, section: indexPath.section)
+        let tracker = trackersToday[indexPath.row]
+        let isCompleted = TrackerRecordStore.shared.isCompletedInDate(for: tracker, date: currentDate)
         let daysCount = TrackerRecordStore.shared.recordsCount(for: tracker)
         return TrackerObject(tracker: tracker,
-                             isComleted: isCompleted, daysCount: daysCount)
+                             isCompleted: isCompleted, daysCount: daysCount)
         
     }
-
-    func addTracker(_ tracker: Tracker) throws {
-        try? dataStore.addNewTracker(tracker)
+    
+    func categoryName (section: Int) -> String {
+        fetchedResultsController.object(at: IndexPath(item: 0, section: section)).name ?? ""
     }
     
-//TODO:    func deleteTracker(at indexPath: IndexPath) throws {
-//        let tracker = fetchedResultsController.object(at: indexPath)
-//        try? dataStore.delete(tracker)
-//    }
+    func addTracker(_ tracker: Tracker) throws {
+        try? trackersDataStore.addNewTracker(tracker)
+    }
+    
+    //TODO:    func deleteTracker(at indexPath: IndexPath) throws {
+    //        let tracker = fetchedResultsController.object(at: indexPath)
+    //        try? dataStore.delete(tracker)
+    //    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
 extension TrackersDataProvider: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-  
+        
     }
-
+    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-          }
+    }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         

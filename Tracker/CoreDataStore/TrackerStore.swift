@@ -31,7 +31,7 @@ final class TrackerStore: NSObject, TrackerDataStore {
                 color: uiColorMarshalling.color(from: trackerCD.color ?? "#000000"),
                 emoji: trackerCD.emoji ?? "",
                 schedule: scheduleTransformer.schedule(from: trackerCD.schedule ?? ""),
-                date: trackerCD.date ?? Date()
+                date: trackerCD.date ?? ""
             )
             trackers.append(tracker)
         }
@@ -69,9 +69,30 @@ final class TrackerStore: NSObject, TrackerDataStore {
                        color: uiColorMarshalling.color(from: cd.color ?? "#FFFFFF"),
                        emoji: cd.emoji ?? "",
                        schedule: scheduleTransformer.schedule(from: cd.schedule ?? ""),
-                       date: cd.date ?? Date()
+                       date: cd.date ?? ""
         )
     }
+   
+   
+    func getTrackerById(_ id: UUID) throws -> TrackerCD? {
+        let fetchRequest: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: false)]
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id.uuidString)
+        let result = try context.fetch(fetchRequest)
+        guard let firstResult = result.first else {
+            return nil
+        }
+        return firstResult
+    }
+    
+    func getAllTrackers() throws -> [TrackerCD?] {
+        let fetchRequest: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: false)]
+        let result = try context.fetch(fetchRequest)
+        
+        return result
+    }
+    
     
     //MARK: - private methods
     

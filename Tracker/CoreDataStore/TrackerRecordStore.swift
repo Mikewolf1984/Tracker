@@ -46,12 +46,24 @@ final class TrackerRecordStore: NSObject {
         try context.save()
     }
     func recordsCount(for tracker: Tracker) -> Int {
+        
         let fetchRequest = NSFetchRequest<TrackerRecordCD>(entityName: "TrackerRecordCD")
         fetchRequest.resultType = .managedObjectIDResultType
-        fetchRequest.predicate = NSPredicate(format: "%K == \(TrackersViewController.shared.currentDate)", #keyPath(TrackerRecordCD.date))
+        fetchRequest.predicate = NSPredicate(format: "%K == %@", (\TrackerRecordCD.id)._kvcKeyPathString!, tracker.id as CVarArg)
         let records = try! context.execute(fetchRequest) as! NSAsynchronousFetchResult<NSFetchRequestResult>
         return records.finalResult?.count ?? 0
     }
+    
+    func isCompletedInDate(for tracker: Tracker, date: String) -> Bool {
+        let fetchRequest = NSFetchRequest<TrackerRecordCD>(entityName: "TrackerRecordCD")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: false)]
+        fetchRequest.predicate = NSPredicate(format: "%K == %@ AND %K == %@",(\TrackerRecordCD.id)._kvcKeyPathString!, tracker.id as CVarArg, #keyPath(TrackerRecordCD.date), date as CVarArg)
+        let result = try! context.fetch(fetchRequest)
+        
+        return result.isEmpty == false
+    }
+    
+    
     //MARK: - private methods
     //MARK: - objc methods
     //MARK: - extensions

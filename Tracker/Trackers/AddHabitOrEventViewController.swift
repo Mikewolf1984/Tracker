@@ -255,15 +255,27 @@ final class AddHabitOrEventViewController: UIViewController {
     }
     
     @objc  private func createButtonTapped() {
-        let newTracker: Tracker = .init(
-            id: UUID(),
-            type: trackerType,
-            name: nameTextField.text ?? "",
-            color: colors[colorIndexPath?.item ?? 0],
-            emoji: emojies[emojiIndexPath?.item ?? 0],
-            schedule: selectedDays,
-            date: Date()
-        )
+        var newTracker: Tracker
+        if #available(iOS 15.0, *) {
+            newTracker = .init(
+                id: UUID(),
+                type: trackerType,
+                name: nameTextField.text ?? "",
+                color: colors[colorIndexPath?.item ?? 0],
+                emoji: emojies[emojiIndexPath?.item ?? 0],
+                schedule: selectedDays,
+                date: Date().formatted(date: .numeric, time: .omitted)
+            )
+        } else {
+            newTracker = .init(
+                id: UUID(),
+                type: trackerType,
+                name: nameTextField.text ?? "",
+                color: colors[colorIndexPath?.item ?? 0],
+                emoji: emojies[emojiIndexPath?.item ?? 0],
+                schedule: selectedDays,
+                date: ""
+            )}
         guard let category = selectedCategory else { return }
         delegate?.trackerDidCreated(tracker: newTracker, category: category)
         dismiss(animated: true)

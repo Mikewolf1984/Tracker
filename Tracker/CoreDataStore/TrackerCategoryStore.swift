@@ -15,13 +15,13 @@ final class TrackerCategoryStore: NSObject {
         for categoryCD in trackerCategoriesCD {
             var trackers: [Tracker] = []
             for trackerID in categoryCD.trackers as! [UUID] {
-                let tracker = TrackerStore.shared.trackers.first(where: { $0.id == trackerID })!
-                trackers.append(tracker)
+                if let tracker = TrackerStore.shared.trackers.first(where: { $0.id == trackerID }) {
+                    trackers.append(tracker)
+                } else { continue }
             }
             let category = TrackerCategory(name: categoryCD.name!, trackers: trackers)
             categories.append(category)
         }
-        
     }
     //MARK: - public properties
     static let shared = TrackerCategoryStore()
@@ -30,7 +30,7 @@ final class TrackerCategoryStore: NSObject {
     private var context: NSManagedObjectContext
     //MARK: - override methods
     //MARK: - public methods
-    func saveCategoryToCD (category: TrackerCategory, tracker: Tracker) throws {
+    func saveCategoryToCD (category: TrackerCategory, tracker: Tracker?) throws {
         let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
         fetchRequest.resultType = .managedObjectIDResultType
         let categories = try context.execute(fetchRequest) as! NSAsynchronousFetchResult<NSFetchRequestResult>
@@ -50,7 +50,7 @@ final class TrackerCategoryStore: NSObject {
                 if categoryById.name == category.name {
                     let oldTrackersIDs: [UUID] = categoryById.trackers as! [UUID]
                     var newTrackersIDs: [UUID] = oldTrackersIDs
-                    newTrackersIDs.append(tracker.id)
+                    if let tracker = tracker { newTrackersIDs.append(tracker.id) }
                     categoryById.trackers = newTrackersIDs as NSObject
                     try context.save()
                 } else {
