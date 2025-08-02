@@ -115,6 +115,14 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "TrackersViewController.viewDidLoad():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "categories">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "main:AppDelegate.swift">
          <PersistentStrings>
             <PersistentString
@@ -163,6 +171,9 @@
          <PersistentStrings>
             <PersistentString
                value = "trackers">
+            </PersistentString>
+            <PersistentString
+               value = "categories">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
