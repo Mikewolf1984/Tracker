@@ -4,7 +4,7 @@ import Foundation
 final class TrackersViewController: UIViewController {
     
     //MARK: - public properties
-    static let shared = TrackersViewController()
+    
     var currentDate: Date = Date()
     var currentDateString: String = ""
     var currentDayOfWeek: DayOfWeek = .monday
@@ -23,15 +23,13 @@ final class TrackersViewController: UIViewController {
     
     private let daysOfWeek: [DayOfWeek] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     private let cellIdentifier = "trackercell"
-    private var completedTrackers: Set<TrackerRecord> = TrackerRecordStore.shared.records
-    private var categories: [TrackerCategory] = TrackerCategoryStore.shared.categories
+    private var categories: [TrackerCategory] = []
     private var filteredCategories: [TrackerCategory] = []
     private var dateFormatter = DateFormatter()
     
-    private let trackerStore = TrackerStore()
-    private let trackerCategoryStore = TrackerCategoryStore()
-    private let trackerRecordStore = TrackerRecordStore()
-    
+    private let trackerStore = TrackerStore.shared
+    private let trackerCategoryStore = TrackerCategoryStore.shared
+    private let trackerRecordStore = TrackerRecordStore.shared
     private let dataProvider = TrackersDataProvider()
     
     private  let trackersLabel = UILabel()
@@ -72,14 +70,18 @@ final class TrackersViewController: UIViewController {
         }
         dateRefresh()
         let cat1: TrackerCategory = .init(name: "Хобби", trackers: [])
-        if categories.isEmpty {
-            categories.append(cat1)
-        }
+        
         do {
-            try TrackerCategoryStore.shared.saveCategoryToCD(category: cat1, tracker: nil)
+            try  trackerCategoryStore?.saveCategoryToCD(category: cat1, tracker: nil)
         } catch {
             print("Невозможно добавить категорию")
         }
+        
+        categories = trackerCategoryStore?.categories ?? [cat1]
+        if categories.isEmpty {
+            categories.append(cat1)
+        }
+        
         dateFormatter.dateFormat = "yyyy-MM-dd"
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -153,9 +155,9 @@ final class TrackersViewController: UIViewController {
     }
     
     private func isTrackerCompletedToday(_ tracker: Tracker) -> Bool {
-        TrackerRecordStore.shared.isCompletedInDate(for: tracker, date: currentDateString)
+        trackerRecordStore?.isCompletedInDate(for: tracker, date: currentDateString) ?? false
     }
-        
+    
     private func dateRefresh() {
         switch Calendar.current.component(.weekday, from: currentDate) {
         case 2: currentDayOfWeek = .monday
@@ -206,7 +208,7 @@ extension TrackersViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCollectionViewCell else {return UICollectionViewCell()}
-        let trackerObjectToShow = dataProvider.object(at: indexPath, day: currentDayOfWeek, currentDate: currentDateString) 
+        let trackerObjectToShow = dataProvider.object(at: indexPath, day: currentDayOfWeek, currentDate: currentDateString)
         cell.configureCell(with: trackerObjectToShow.tracker, daysCount: trackerObjectToShow.daysCount, isCompleted: trackerObjectToShow.isCompleted, delegate: self)
         return cell
     }
@@ -260,10 +262,12 @@ extension TrackersViewController: AddHabitOrTrackerDelegate {
         let updatedCategory  = TrackerCategory(name: category.name, trackers: updatedTrackers)
         let categoryIndex = categories.firstIndex(where: { $0.name == category.name }) ?? 0
         categories[categoryIndex] = updatedCategory
+        do {
+            try trackerStore?.addNewTracker(newTracker)
+            try trackerCategoryStore?.saveCategoryToCD(category: updatedCategory, tracker: newTracker)
+        } catch {return}
         dateRefresh()
         showTrackersOrStub()
-        try! trackerStore.addNewTracker(newTracker)
-        try! trackerCategoryStore.saveCategoryToCD(category: updatedCategory, tracker: newTracker)
         dismiss(animated: true)
     }
     
@@ -279,7 +283,7 @@ extension TrackersViewController: CompleteButtonDelegate {
         if isTrackerCompletedToday(tracker) {
             let record = TrackerRecord(id: tracker.id, date: currentDateString)
             do {
-                try TrackerRecordStore.shared.removeRecord(record) }
+                try trackerRecordStore?.removeRecord(record) }
             catch {
                 print("Error removing record")
             }
@@ -287,7 +291,11 @@ extension TrackersViewController: CompleteButtonDelegate {
         } else {
             if currentDate <= Date() {
                 let newRecord = TrackerRecord(id: tracker.id, date: currentDateString)
-                try! TrackerRecordStore.shared.addRecord(newRecord)
+                do {
+                    try trackerRecordStore?.addRecord(newRecord)
+                } catch {
+                    print("Error adding record")
+                }
             }
         }
         collectionView.reloadData()

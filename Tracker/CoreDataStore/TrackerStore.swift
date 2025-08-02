@@ -1,6 +1,5 @@
 import CoreData
-import UIKit
-
+import Foundation
 
 protocol TrackerDataStore {
     var context: NSManagedObjectContext { get }
@@ -8,21 +7,14 @@ protocol TrackerDataStore {
     //TODO: func delete(_ record: NSManagedObject) throws
 }
 
-
-
 final class TrackerStore: NSObject, TrackerDataStore {
     //MARK: - Init
-    convenience override init() {
-        let context = AppDelegate.shared.persistentContainer.viewContext
-        try! self.init(context: context)
-    }
-    init(context: NSManagedObjectContext) throws {
-       self.context = context
+    private init(context: NSManagedObjectContext) throws {
+       self.context = DataBaseStore.shared.context
         self.trackers = []
         super.init()
         let fetchRequest: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
         let trackersCD = try context.fetch(fetchRequest)
-    
         for trackerCD in trackersCD {
             let tracker = Tracker(
                 id: trackerCD.id ?? UUID(),
@@ -37,14 +29,12 @@ final class TrackerStore: NSObject, TrackerDataStore {
         }
     }
     
-    
     //MARK: - public properties
-    static let shared = TrackerStore()
+    static let shared = try? TrackerStore(context: DataBaseStore.shared.context)
     var trackers: [Tracker]
     var context: NSManagedObjectContext
+
     //MARK: - private properties
-    
-    
     private let uiColorMarshalling = UIColorMarshalling()
     private let scheduleTransformer  = ScheduleTransformer()
    
@@ -73,7 +63,6 @@ final class TrackerStore: NSObject, TrackerDataStore {
         )
     }
    
-   
     func getTrackerById(_ id: UUID) throws -> TrackerCD? {
         let fetchRequest: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: false)]
@@ -92,13 +81,7 @@ final class TrackerStore: NSObject, TrackerDataStore {
         
         return result
     }
-    
-    
-    //MARK: - private methods
-    
-    
+    //MARK: - private methods 
     //MARK: - objc methods
     //MARK: - extensions
-  
-    
 }

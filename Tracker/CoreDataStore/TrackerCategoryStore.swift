@@ -1,31 +1,28 @@
-import UIKit
+import Foundation
 import CoreData
+
 final class TrackerCategoryStore: NSObject {
     //MARK: - Init
-    override convenience init() {
-        let context = AppDelegate.shared.persistentContainer.viewContext
-        try! self.init(context: context)
-    }
     
-    init(context: NSManagedObjectContext) throws {
-        self.context = context
+    private init(context: NSManagedObjectContext) throws {
+        self.context = DataBaseStore.shared.context
         super.init()
         let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
         let trackerCategoriesCD = try context.fetch(fetchRequest)
         for categoryCD in trackerCategoriesCD {
             var trackers: [Tracker] = []
-            for trackerID in categoryCD.trackers as! [UUID] {
-                if let tracker = TrackerStore.shared.trackers.first(where: { $0.id == trackerID }) {
+            for trackerID in categoryCD.trackers as? [UUID] ?? [] {
+                if let tracker = TrackerStore.shared?.trackers.first(where: { $0.id == trackerID }) {
                     trackers.append(tracker)
                 } else { continue }
             }
-            let category = TrackerCategory(name: categoryCD.name!, trackers: trackers)
+            let category = TrackerCategory(name: categoryCD.name ?? "", trackers: trackers)
             categories.append(category)
         }
     }
     //MARK: - public properties
-    static let shared = TrackerCategoryStore()
     var categories: [TrackerCategory] = []
+    static let shared = try? TrackerCategoryStore(context: DataBaseStore.shared.context)
     //MARK: - private properties
     private var context: NSManagedObjectContext
     //MARK: - override methods
@@ -33,8 +30,8 @@ final class TrackerCategoryStore: NSObject {
     func saveCategoryToCD (category: TrackerCategory, tracker: Tracker?) throws {
         let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
         fetchRequest.resultType = .managedObjectIDResultType
-        let categories = try context.execute(fetchRequest) as! NSAsynchronousFetchResult<NSFetchRequestResult>
-        let idS = categories.finalResult as! [NSManagedObjectID]
+        let categories = try context.execute(fetchRequest) as? NSAsynchronousFetchResult<NSFetchRequestResult> ?? nil
+        let idS = categories?.finalResult  as? [NSManagedObjectID] ?? []
         if idS.isEmpty {
             let categoryCoreData = TrackerCategoryCD(context: context)
             categoryCoreData.name = category.name
@@ -46,9 +43,9 @@ final class TrackerCategoryStore: NSObject {
             try context.save()
         } else {
             for id  in idS {
-                let categoryById = context.object(with: id) as! TrackerCategoryCD
+                guard let categoryById = context.object(with: id) as? TrackerCategoryCD else {return}
                 if categoryById.name == category.name {
-                    let oldTrackersIDs: [UUID] = categoryById.trackers as! [UUID]
+                    let oldTrackersIDs: [UUID] = categoryById.trackers as? [UUID] ?? []
                     var newTrackersIDs: [UUID] = oldTrackersIDs
                     if let tracker = tracker { newTrackersIDs.append(tracker.id) }
                     categoryById.trackers = newTrackersIDs as NSObject
@@ -66,9 +63,9 @@ final class TrackerCategoryStore: NSObject {
             }
         }
     }
+    
     //MARK: - private methods
     
     //MARK: - objc methods
     //MARK: - extensions
-    
 }

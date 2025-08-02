@@ -406,7 +406,7 @@ extension AddHabitOrEventViewController: UICollectionViewDelegateFlowLayout {
         } else {
             colorIndexPath = indexPath
         }
-        let cell = collectionView.cellForItem(at: indexPath) as! EmojiOrColorCell
+        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiOrColorCell else { return }
         let text = emojies[indexPath.item]
         let color = colors[indexPath.item]
         if indexPath.section == 0 {
@@ -460,7 +460,7 @@ extension AddHabitOrEventViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collectionViewIdentifier, for: indexPath) as! EmojiOrColorCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collectionViewIdentifier, for: indexPath) as? EmojiOrColorCell else {return UICollectionViewCell()}
         let text = emojies[indexPath.item]
         let color = colors[indexPath.item]
         if indexPath.section == 0 {
