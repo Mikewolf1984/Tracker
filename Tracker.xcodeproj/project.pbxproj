@@ -11,6 +11,7 @@
 		4A2FECC72D9003FD00B4E49D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2FECBD2D9003FD00B4E49D /* SceneDelegate.swift */; };
 		4A2FECC92D9003FD00B4E49D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4A2FECB62D9003FD00B4E49D /* LaunchScreen.storyboard */; };
 		4A2FECCA2D9003FD00B4E49D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A2FECBA2D9003FD00B4E49D /* Assets.xcassets */; };
+		4AE932362DB76DEC00D11E7F /* TrackerCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4AE932342DB76DEC00D11E7F /* TrackerCoreData.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +40,7 @@
 		4ADB4DCD2D82231F00FB84C7 /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ADB4DE32D82232200FB84C7 /* TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ADB4DED2D82232200FB84C7 /* TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4AE932352DB76DEC00D11E7F /* TrackerCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TrackerCoreData.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -111,6 +113,7 @@
 		4ADB4DC42D82231F00FB84C7 = {
 			isa = PBXGroup;
 			children = (
+				4AE932342DB76DEC00D11E7F /* TrackerCoreData.xcdatamodeld */,
 				4ACE00212DAACA4E00D0D0FF /* markUPTemplate.swift */,
 				4A2FED3E2D9C72E400B4E49D /* Application */,
 				4ADB4DCF2D82231F00FB84C7 /* Tracker */,
@@ -277,6 +280,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A2FECC62D9003FD00B4E49D /* AppDelegate.swift in Sources */,
+				4AE932362DB76DEC00D11E7F /* TrackerCoreData.xcdatamodeld in Sources */,
 				4A2FECC72D9003FD00B4E49D /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -427,7 +431,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -484,7 +488,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -606,6 +610,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		4AE932342DB76DEC00D11E7F /* TrackerCoreData.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				4AE932352DB76DEC00D11E7F /* TrackerCoreData.xcdatamodel */,
+			);
+			currentVersion = 4AE932352DB76DEC00D11E7F /* TrackerCoreData.xcdatamodel */;
+			path = TrackerCoreData.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 4ADB4DC52D82231F00FB84C7 /* Project object */;
 }

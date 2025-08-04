@@ -255,15 +255,27 @@ final class AddHabitOrEventViewController: UIViewController {
     }
     
     @objc  private func createButtonTapped() {
-        let newTracker: Tracker = .init(
-            id: UUID(),
-            type: trackerType,
-            name: nameTextField.text ?? "",
-            color: colors[colorIndexPath?.item ?? 0],
-            emoji: emojies[emojiIndexPath?.item ?? 0],
-            schedule: selectedDays,
-            date: 0
-        )
+        var newTracker: Tracker
+        if #available(iOS 15.0, *) {
+            newTracker = .init(
+                id: UUID(),
+                type: trackerType,
+                name: nameTextField.text ?? "",
+                color: colors[colorIndexPath?.item ?? 0],
+                emoji: emojies[emojiIndexPath?.item ?? 0],
+                schedule: selectedDays,
+                date: Date().formatted(date: .numeric, time: .omitted)
+            )
+        } else {
+            newTracker = .init(
+                id: UUID(),
+                type: trackerType,
+                name: nameTextField.text ?? "",
+                color: colors[colorIndexPath?.item ?? 0],
+                emoji: emojies[emojiIndexPath?.item ?? 0],
+                schedule: selectedDays,
+                date: ""
+            )}
         guard let category = selectedCategory else { return }
         delegate?.trackerDidCreated(tracker: newTracker, category: category)
         dismiss(animated: true)
@@ -394,7 +406,7 @@ extension AddHabitOrEventViewController: UICollectionViewDelegateFlowLayout {
         } else {
             colorIndexPath = indexPath
         }
-        let cell = collectionView.cellForItem(at: indexPath) as! EmojiOrColorCell
+        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiOrColorCell else { return }
         let text = emojies[indexPath.item]
         let color = colors[indexPath.item]
         if indexPath.section == 0 {
@@ -448,7 +460,7 @@ extension AddHabitOrEventViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collectionViewIdentifier, for: indexPath) as! EmojiOrColorCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collectionViewIdentifier, for: indexPath) as? EmojiOrColorCell else {return UICollectionViewCell()}
         let text = emojies[indexPath.item]
         let color = colors[indexPath.item]
         if indexPath.section == 0 {
