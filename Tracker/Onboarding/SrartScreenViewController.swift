@@ -15,14 +15,6 @@ final class StartScreenViewController: UIViewController {
     // MARK: - override methods
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.view.backgroundColor = UIColor(named: "ypBlue")
-        self.view.addSubview(ypImageView)
-        NSLayoutConstraint.activate([
-            view.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            view.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
-            view.widthAnchor.constraint(equalToConstant: 91)
-        ])
-        print("StartScreen shown")
         let onboardingDidShowKey = UserDefaults.standard.bool(forKey: odsKey)
         if onboardingDidShowKey {
             let tabViewBarController = TabBarViewController()
