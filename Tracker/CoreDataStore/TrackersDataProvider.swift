@@ -11,7 +11,7 @@ protocol DataProviderDelegate: AnyObject {
 }
 
 protocol DataProviderProtocol {
-    var numberOfSections: Int { get }
+    func numberOfSectionsByDay(day: DayOfWeek) -> Int
     func todayTrackersForSection (day: DayOfWeek, section: Int) -> [Tracker]
     func numberOfRowsInSection(day: DayOfWeek, section: Int) -> Int
     func object(at indexPath: IndexPath, day: DayOfWeek, currentDate: String) -> TrackerObject
@@ -23,7 +23,8 @@ final class TrackersDataProvider: NSObject {
     enum DataProviderError: Error {
         case failedToInitializeContext
     }
-    
+    //MARK: public properties
+    static let shared = TrackersDataProvider()
     //MARK: private properties
     private let context = DataBaseStore.shared.context
     private let trackersDataStore = TrackerStore.shared
@@ -40,14 +41,38 @@ final class TrackersDataProvider: NSObject {
         try? fetchedResultsController.performFetch()
         return fetchedResultsController
     }()
+    //MARK: private methods
+    
+    func refreshStore()
+    {
+        try? fetchedResultsController.performFetch()
+    }
 }
 
 // MARK: - DataProviderProtocol
 extension TrackersDataProvider: DataProviderProtocol {
-    var numberOfSections: Int {
+    func numberOfSectionsByDay(day: DayOfWeek)-> Int {
+        var result :Int = 0
+        let allSections = fetchedResultsController.sections?.count ?? 0
+        for section in 0..<allSections {
+            if todayTrackersForSection(day: day, section: section).count>0 {
+                result += 1
+            }
+        }
+        return result
+    }
+    func numberOfSections() -> Int {
         fetchedResultsController.sections?.count ?? 0
+    
     }
     
+    func todayCategoriesToShow(day: DayOfWeek) -> [TrackerCategory] {
+        var result: [TrackerCategory] = []
+        for section in 0..<numberOfSectionsByDay(day: day) {
+            todayTrackersForSection(day: day, section: section)
+        }
+        return result
+    }
     func todayTrackersForSection (day: DayOfWeek, section: Int) -> [Tracker] {
         var result: [Tracker] = []
         do
