@@ -32,14 +32,28 @@ final class TrackersViewController: UIViewController {
         return button
     }()
     
+    private  let filtersButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
+        button.setTitleColor(.white, for: .normal)
+        button.setTitle(NSLocalizedString("filters", comment: "Фильтры") , for: .normal)
+        button.backgroundColor = .blue
+        button.layer.cornerRadius = 16
+        button.addTarget(self, action: #selector(filtersButtonTouch), for: .touchUpInside)
+        return button
+    }()
+    
     private  let datePickerButton: UIDatePicker = {
         let datePicker: UIDatePicker = UIDatePicker()
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
-        datePicker.locale = Locale(identifier: "ru_Ru")
+        //datePicker.locale = Locale(identifier: "ru_Ru")
         datePicker.addTarget(self, action: #selector(dateDidChanged), for: .valueChanged)
         return datePicker
     }()
+    
+   
     
     private var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -79,7 +93,10 @@ final class TrackersViewController: UIViewController {
                 collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
                 collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16)
                 
-            ])} else {
+            ])
+            view.addSubview(filtersButton)
+            configureFiltersButton()
+        } else {
                 if collectionView.superview != nil {
                     collectionView.removeFromSuperview()
                 }
@@ -91,7 +108,7 @@ final class TrackersViewController: UIViewController {
                 dizzyImageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
                 dizzyImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
                 let dizzyLabel = UILabel()
-                dizzyLabel.text = "Что будем отслеживать?"
+                dizzyLabel.text = NSLocalizedString("what_to_track", comment: "Что будем отслеживать?")
                 dizzyLabel.font = .systemFont(ofSize: 12, weight: .medium)
                 dizzyLabel.textColor = .black
                 view.addSubview(dizzyLabel)
@@ -112,7 +129,7 @@ final class TrackersViewController: UIViewController {
         datePickerButton.translatesAutoresizingMaskIntoConstraints = false
         datePickerButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 1).isActive = true
         datePickerButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        trackersLabel.text = "Трекеры"
+        trackersLabel.text = NSLocalizedString("trackers_title", comment: "Трекеры")
         trackersLabel.font  = UIFont.systemFont(ofSize: 34, weight: .bold)
         trackersLabel.textColor = .black
         view.addSubview(trackersLabel)
@@ -126,8 +143,19 @@ final class TrackersViewController: UIViewController {
         searchField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -16).isActive = true
         searchField.heightAnchor.constraint(equalToConstant: 36).isActive = true
         searchField.searchBarStyle = .minimal
-        searchField.placeholder = "Поиск"
+        searchField.placeholder =  NSLocalizedString("search", comment: "Поиск")
         showTrackersOrStub()
+    }
+    
+    private func configureFiltersButton () {
+        filtersButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            filtersButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            filtersButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            filtersButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 130),
+            filtersButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -130),
+            filtersButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
     }
     
     private func isTrackerCompletedToday(_ tracker: Tracker) -> Bool {
@@ -162,6 +190,9 @@ final class TrackersViewController: UIViewController {
         let addNewTrackerViewController = AddNewTrackerViewController(delegate: self, categories: categories)
         addNewTrackerViewController.modalPresentationStyle = .automatic
         present(addNewTrackerViewController, animated: true, completion: nil)
+    }
+    
+    @objc  private func filtersButtonTouch() {
     }
     
     @objc  private func dateDidChanged() {

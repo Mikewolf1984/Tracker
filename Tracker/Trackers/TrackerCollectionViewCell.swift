@@ -70,9 +70,9 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         titleLabel.text = tracker.name
         var textDays: String = ""
         switch daysCount {
-        case 1: textDays = "\(daysCount) день"
-        case 2, 3, 4: textDays = "\(daysCount) дня"
-        default: textDays = "\(daysCount) дней"
+        case 1: textDays = "\(daysCount) \(NSLocalizedString("day_1", comment: "день"))"
+        case 2, 3, 4: textDays = "\(daysCount) \(NSLocalizedString("day_2", comment: "дня"))"
+        default: textDays = "\(daysCount)  \(NSLocalizedString("day_3", comment: "дней"))"
         }
         daysCounterLabel.text = textDays
         redrawCompleteButton(isCompleted: isCompleted)

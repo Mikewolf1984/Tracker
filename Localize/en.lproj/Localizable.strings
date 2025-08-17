@@ -1,7 +1,13 @@
-/* 
-  Localizable.strings
-  Tracker
+"trackers_title" = "Trackers";
+"statistics" = "Statistics";
+"what_to_track" = "What do you want to track?";
+"search" = "Search";
+"nothing_found" = "Nothing found";
+"filters" = "Filters";
+"day_1" = "day";
+"day_2" = "days";
+"day_3" = "days";
+"delete_tracker_confirm" = "Are you sure you want to delete this tracker?";
+"delete_tracker_button" = "Delete";
+"cancel_button" = "Cancel";
 
-  Created by Михаил Волков on 07.08.2025.
-  
-*/
