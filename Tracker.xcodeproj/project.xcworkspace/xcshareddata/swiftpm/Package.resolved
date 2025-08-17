@@ -1,0 +1,15 @@
+{
+  "originHash" : "b4860b1780b92e5fc8d1c50e5e5fb7fdb52613bb3412abd70646e78ea671a983",
+  "pins" : [
+    {
+      "identity" : "metrica-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yandexmobile/metrica-sdk-ios",
+      "state" : {
+        "revision" : "13d8b11181a33938ef42759d49466a621df5e7db",
+        "version" : "4.5.2"
+      }
+    }
+  ],
+  "version" : 3
+}
