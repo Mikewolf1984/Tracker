@@ -19,7 +19,7 @@ final class DataBaseStore {
     }
     
     func saveContext() {
-        let context = persistentContainer.viewContext
+        //let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
                 try context.save()

@@ -15,18 +15,23 @@ protocol DataProviderProtocol {
     func todayTrackersForSection (day: DayOfWeek, section: Int) -> [Tracker]
     func numberOfRowsInSection(day: DayOfWeek, section: Int) -> Int
     func object(at indexPath: IndexPath, day: DayOfWeek, currentDate: String) -> TrackerObject
-    func addTracker(_ tracker: Tracker) throws
-    //TODO: func deleteRecord(at indexPath: IndexPath) throws
+    func addTracker(_ tracker: Tracker, category: TrackerCategory) throws
+    func deleteTracker(id: UUID) throws
 }
 
 final class TrackersDataProvider: NSObject {
     enum DataProviderError: Error {
         case failedToInitializeContext
     }
+    
+    //MARK: - Init
+    private init(context: NSManagedObjectContext) throws{
+        self.context = DataBaseStore.shared.context
+    }
     //MARK: public properties
-    static let shared = TrackersDataProvider()
+    static let shared = try? TrackersDataProvider(context: DataBaseStore.shared.context)
     //MARK: private properties
-    private let context = DataBaseStore.shared.context
+    private var context = DataBaseStore.shared.context
     private let trackersDataStore = TrackerStore.shared
     private let trackerRecordStore = TrackerRecordStore.shared
     private let categoryDataStore = TrackerCategoryStore.shared
@@ -47,10 +52,44 @@ final class TrackersDataProvider: NSObject {
     {
         try? fetchedResultsController.performFetch()
     }
+    
+    func getAllTrackers() -> [Tracker] {
+       
+        trackersDataStore?.updateTrackersStore()
+        guard let result = trackersDataStore?.trackers else { return [] }
+        return result
+    }
+    
+    func getAllCategories() -> [TrackerCategory] {
+        categoryDataStore?.updateCategoryStore()
+        guard let result = categoryDataStore?.categories else { return [] }
+        return result
+    }
+    
+    func getAllRecords() -> [TrackerRecord] {
+        let records = trackerRecordStore?.records ?? []
+        return Array(records)
+    }
+    
+    func getCompletedTrackers() -> [TrackerRecord] {
+        var result: [TrackerRecord] = []
+        let allTrackers = getAllTrackers()
+        let allRecords = getAllRecords()
+        for tracker in allTrackers {
+            for record in allRecords {
+                if record.id == tracker.id {
+                    result.append(record)
+                }
+            }
+        }
+        return result
+    }
 }
 
 // MARK: - DataProviderProtocol
 extension TrackersDataProvider: DataProviderProtocol {
+   
+    
     func numberOfSectionsByDay(day: DayOfWeek)-> Int {
         var result :Int = 0
         let allSections = fetchedResultsController.sections?.count ?? 0
@@ -63,7 +102,7 @@ extension TrackersDataProvider: DataProviderProtocol {
     }
     func numberOfSections() -> Int {
         fetchedResultsController.sections?.count ?? 0
-    
+        
     }
     
     func todayCategoriesToShow(day: DayOfWeek) -> [TrackerCategory] {
@@ -108,11 +147,29 @@ extension TrackersDataProvider: DataProviderProtocol {
         fetchedResultsController.object(at: IndexPath(item: 0, section: section)).name ?? ""
     }
     
-    func addTracker(_ tracker: Tracker) throws {
-        try trackersDataStore?.addNewTracker(tracker)
+    func addTracker(_ tracker: Tracker, category: TrackerCategory)  throws {
+        guard  let categoryCD = try categoryDataStore?.getCategoryCDByName(category.name) else { return }
+        try trackersDataStore?.addNewTracker(tracker, category: categoryCD)
     }
     
-    //TODO:    func deleteTracker(at indexPath: IndexPath) throws {
+    
+    func deleteTracker(id: UUID) throws {
+        guard let trackerCD =  try trackersDataStore?.getTrackerById(id) else { return}
+        
+        print("Категорий: \(getAllCategories().count)")
+        
+        context.delete(trackerCD)
+        
+        print("Категорий: \(getAllCategories().count)")
+        
+        try context.save()
+    }
+    
+    func deleteRecords(for tracker: Tracker) throws {
+        try trackerRecordStore?.deleteAllRecords(for: tracker)
+    }
+    
+    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

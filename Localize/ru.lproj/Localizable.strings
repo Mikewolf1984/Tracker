@@ -7,6 +7,7 @@
 "day_1" = "день";
 "day_2" = "дня";
 "day_3" = "дней";
+"edit_tracker" = "Редактировать";
 "delete_tracker_confirm" = "Уверены, что хотите удалить трекер?";
-"delete_tracker_button" = "Удалить";
+"delete_tracker" = "Удалить";
 "cancel_button" = "Отменить";

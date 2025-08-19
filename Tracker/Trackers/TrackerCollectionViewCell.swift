@@ -6,6 +6,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
+        
     }
     
     required init?(coder: NSCoder) {
@@ -13,6 +14,9 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     }
     
     //MARK: - private properties
+    var onEditButtonTapped: ((Tracker) -> Void)?
+    var onDeleteButtonTapped: ((Tracker) -> Void)?
+    
     private var isCompleted: Bool = false
     private var tracker: Tracker?
     weak var delegate: CompleteButtonDelegate?
@@ -88,7 +92,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             rectView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             rectView.heightAnchor.constraint(equalToConstant: 90)
         ])
-        contentView.addSubview(emojiLabel)
+        rectView.addSubview(emojiLabel)
         emojiLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             emojiLabel.topAnchor.constraint(equalTo: rectView.topAnchor, constant: 12),
@@ -96,7 +100,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             emojiLabel.widthAnchor.constraint(equalToConstant: 24),
             emojiLabel.heightAnchor.constraint(equalToConstant: 24)
         ])
-        contentView.addSubview(titleLabel)
+        rectView.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: rectView.topAnchor, constant: 44),
@@ -120,6 +124,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             completeButton.widthAnchor.constraint(equalToConstant: 34),
             completeButton.heightAnchor.constraint(equalToConstant: 34)
         ])
+        let interaction = UIContextMenuInteraction(delegate: self)
+        rectView.addInteraction(interaction)
     }
     
     private func redrawCompleteButton(isCompleted: Bool) {
@@ -137,5 +143,30 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         guard let tracker = tracker else { return }
         delegate?.didTapCompleteButton(tracker: tracker)
         redrawCompleteButton(isCompleted: !isCompleted)
+    }
+}
+
+extension TrackerCollectionViewCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let editAction = UIAction(title: NSLocalizedString("edit_tracker", comment: "Редактировать" ) , image: nil) { [ weak self ] _ in
+                guard let self, let tracker = self.tracker else { return }
+                //TODO: self.onEditButtonTapped?(tracker)
+            }
+            
+            let deleteAction = UIAction(title: "", image: nil) { [ weak self ] _ in
+                guard let self, let tracker = self.tracker else { return }
+                self.onDeleteButtonTapped?(tracker)
+                
+            }
+            
+            let deleteTitle = NSAttributedString(
+                string: NSLocalizedString("delete_tracker", comment: "Удалить" ),
+                attributes: [.foregroundColor: UIColor.red]
+            )
+            deleteAction.setValue(deleteTitle, forKey: "attributedTitle")
+            
+            return UIMenu(title: "", children: [editAction, deleteAction])
+        }
     }
 }

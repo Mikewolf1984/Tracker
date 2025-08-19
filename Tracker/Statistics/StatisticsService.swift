@@ -23,14 +23,7 @@ final class StatisticsService {
     
     // MARK: - public methods
     func calculate() -> Statistics {
-        let records = trackerRecordStore?.records ?? []
-        let allTrackers = trackerStore?.trackers ?? []
-        return Statistics(
-            bestPeriod: bestPeriod(from: records, allTrackers: allTrackers),
-            perfectDays: perfectDays(from: records, allTrackers: allTrackers),
-            trackersCompleted: trackersCompleted(from: records),
-            completedAverage: averageCompletionRate(from: records)
-        )
+     return Statistics(bestPeriod: 0, perfectDays: 0, trackersCompleted: 0, completedAverage: 0)
     }
     
     // MARK: - private methods

@@ -117,7 +117,7 @@ final class CreateNewCategoryViewController: UIViewController {
         do {
             guard let newCategory = try categoryStore?.createCategory(name: categoryName) else { return }
             onCategoryCreated?(newCategory)
-            dataProvider.refreshStore()
+            dataProvider?.refreshStore()
             self.dismiss(animated: true)
         } catch {
             print("Error creating category: \(error)")
