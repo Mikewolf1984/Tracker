@@ -3,8 +3,6 @@ import UIKit
 final class StatisticsViewController: UIViewController {
     
     //MARK: - private properties
-    private let statisticsService = StatisticsService()
-    private var statistics: Statistics?
     
     private var titleLabel: UILabel = {
         let label = UILabel()
@@ -21,6 +19,7 @@ final class StatisticsViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.backgroundColor = .systemBackground
         tableView.separatorStyle = .none
+        
         return tableView
     }()
     
@@ -33,24 +32,38 @@ final class StatisticsViewController: UIViewController {
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         label.textColor = .black
         label.text = "Анализировать пока нечего"
+        
         return label
     }()
+    private var allCount: Int = 0
+    private let recordsStore = TrackerRecordStore.shared
     
     
     //MARK: - override methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        do {
+            try recordsStore.updateRecords()
+        }
+        catch {
+            print ("Error updating store")
+        }
+        allCount = recordsStore.records.count
         setupTitleLabel()
-        view.backgroundColor = .systemBackground//Colors.secondary
-        if false /*statisticsService.isEmpty*/ {
+        view.backgroundColor = .systemBackground
+        if allCount == 0 {
             setupDizzyView()
         } else {
-            statistics = statisticsService.calculate()
             configureTableView()
             tableView.dataSource = self
             tableView.delegate = self
         }
-        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleTrackerRecordsDidChange),
+            name: .trackerRecordsDidChange,
+            object: nil
+        )
     }
     //MARK: - private methods
     
@@ -65,24 +78,28 @@ final class StatisticsViewController: UIViewController {
     }
     
     private func setupDizzyView() {
-        view.addSubview(dizzyView)
-        view.addSubview(dizzyLabel)
-        dizzyView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            dizzyView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            dizzyView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
-            dizzyView.widthAnchor.constraint(equalToConstant: 80),
-            dizzyView.heightAnchor.constraint(equalToConstant: 80)
-        ])
-        dizzyLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            dizzyLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            dizzyLabel.topAnchor.constraint(equalTo: dizzyView.bottomAnchor, constant: 8)
-        ])
-    }
+            tableView.removeFromSuperview()
+            view.addSubview(dizzyView)
+            view.addSubview(dizzyLabel)
+            dizzyView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                dizzyView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+                dizzyView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+                dizzyView.widthAnchor.constraint(equalToConstant: 80),
+                dizzyView.heightAnchor.constraint(equalToConstant: 80)
+            ])
+            dizzyLabel.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                dizzyLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+                dizzyLabel.topAnchor.constraint(equalTo: dizzyView.bottomAnchor, constant: 8)
+            ])
+        
+        }
     
     private func configureTableView() {
         view.addSubview(tableView)
+        dizzyView.removeFromSuperview()
+        dizzyLabel.removeFromSuperview()
         tableView.register(StatisticsTableViewCell.self, forCellReuseIdentifier: StatisticsTableViewCell.reuseIdentifier)
         tableView.allowsSelection = false
         tableView.isScrollEnabled = false
@@ -94,7 +111,20 @@ final class StatisticsViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
+    //MARK: - objc methods
+    @objc private func handleTrackerRecordsDidChange() {
+        
+        allCount = recordsStore.records.count
+        if allCount == 0 {
+            setupDizzyView()
+        } else {
+            configureTableView()
+            tableView.reloadData()
+        }
+    }
 }
+
+
 
 //MARK: - extensions
 
@@ -110,13 +140,13 @@ extension StatisticsViewController: UITableViewDataSource {
         
         switch indexPath.row {
         case 0:
-            cell.configure(with: statistics?.bestPeriod, for: "Лучший период")
+            cell.configure(counter: 0, statistics: "Лучший период")
         case 1:
-            cell.configure(with: statistics?.perfectDays, for: "Идеальные дни")
+            cell.configure(counter: 0, statistics: "Идеальные дни")
         case 2:
-            cell.configure(with: statistics?.trackersCompleted, for: "Трекеров завершено")
+            cell.configure(counter: allCount, statistics: "Трекеров завершено")
         case 3:
-            cell.configure(with: statistics?.completedAverage, for: "Среднее значение")
+            cell.configure(counter: 0, statistics: "Среднее значение")
         default:
             break
         }

@@ -54,12 +54,15 @@ final class StatisticsTableViewCell: UITableViewCell {
     }
 
     // MARK: - public methods
-    func configure(with counter: Int?, for statistics: String) {
-        counterLabel.text = counter.map { "\($0)" } ?? "-"
+    func configure(counter: Int, statistics: String) {
         statisticLabel.text = statistics
+        switch statistics {
+        case "Трекеров завершено": counterLabel.text = "\(counter)"
+        default: counterLabel.text = "-"
+        }
     }
     
-    // MARK: - Private Methods
+    // MARK: - private Methods
     private func setup() {
         backgroundColor = .clear
         contentView.addSubview(statisticsCellView)

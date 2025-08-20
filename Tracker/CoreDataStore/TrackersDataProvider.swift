@@ -158,6 +158,7 @@ extension TrackersDataProvider: DataProviderProtocol {
         guard let trackerCD =  try trackersDataStore.getTrackerById(id) else { return}
         context.delete(trackerCD)
         try context.save()
+       
     }
     
     func deleteRecords(for tracker: Tracker) throws {

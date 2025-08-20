@@ -27,6 +27,7 @@ final class TrackerRecordStore: NSObject {
     func updateRecords() throws {
         records.removeAll()
         let fetchRequest: NSFetchRequest<TrackerRecordCD> = TrackerRecordCD.fetchRequest()
+     
         let trackerRecordsCD = try context.fetch(fetchRequest) as [TrackerRecordCD]
         if trackerRecordsCD.isEmpty { return }
         for record in trackerRecordsCD {
@@ -41,6 +42,8 @@ final class TrackerRecordStore: NSObject {
         trackerRecordCoreData.id = record.id
         try context.save()
         try updateRecords()
+        NotificationCenter.default.post(name: .trackerRecordsDidChange, object: nil)
+        
     }
     
     
@@ -58,6 +61,8 @@ final class TrackerRecordStore: NSObject {
         }
         try context.save()
         try updateRecords()
+        NotificationCenter.default.post(name: .trackerRecordsDidChange, object: nil)
+        
     }
     
     func deleteAllRecords(for tracker: Tracker) throws {
@@ -74,6 +79,7 @@ final class TrackerRecordStore: NSObject {
         }
         try context.save()
         try updateRecords()
+        NotificationCenter.default.post(name: .trackerRecordsDidChange, object: nil)
     }
     
     
@@ -104,4 +110,10 @@ final class TrackerRecordStore: NSObject {
     //MARK: - private methods
     //MARK: - objc methods
     //MARK: - extensions
+    
 }
+
+extension Notification.Name {
+    static let trackerRecordsDidChange = Notification.Name("trackerRecordsDidChange")
+}
+

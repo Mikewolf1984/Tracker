@@ -155,6 +155,7 @@ final class TrackersViewController: UIViewController {
             guard let self else { return }
             do {
                 try dataProvider.deleteTracker(id: tracker.id)
+                try dataProvider.deleteRecords(for: tracker)
                 
                 
                 self.dateRefresh()
