@@ -23,7 +23,7 @@ final class CategoryTableViewCell: UITableViewCell {
     func configure(with viewModel: CategoryViewModel, isLastCell: Bool) {
         
         self.viewModel = viewModel
-        backgroundColor = .textBackGround
+        backgroundColor = .lightGray
         viewModel.categoryNameBinding = { [ weak self ] categoryName in
             self?.categoryNameLabel.text = categoryName
         }

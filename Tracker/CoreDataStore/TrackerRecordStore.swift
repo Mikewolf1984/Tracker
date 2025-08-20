@@ -21,13 +21,12 @@ final class TrackerRecordStore: NSObject {
     static let shared = TrackerRecordStore()
     var records =  Set<TrackerRecord>()
     //MARK: - private properties
-    private var context: NSManagedObjectContext
+    private let context: NSManagedObjectContext
     //MARK: - override methods
     //MARK: - public methods
     func updateRecords() throws {
         records.removeAll()
         let fetchRequest: NSFetchRequest<TrackerRecordCD> = TrackerRecordCD.fetchRequest()
-     
         let trackerRecordsCD = try context.fetch(fetchRequest) as [TrackerRecordCD]
         if trackerRecordsCD.isEmpty { return }
         for record in trackerRecordsCD {

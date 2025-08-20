@@ -5,7 +5,7 @@ final class AddTrackerCell: UITableViewCell {
     //MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .textBackGround
+        backgroundColor = Colors.lightGray
         accessoryType = .none
     }
     required init?(coder: NSCoder) {
@@ -15,7 +15,7 @@ final class AddTrackerCell: UITableViewCell {
     //MARK: - private properties
     private let separatorLine: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "divider"))
-        imageView.tintColor = YPColors.ypGray
+        imageView.tintColor = YPColors.ypBackGroundColor
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()

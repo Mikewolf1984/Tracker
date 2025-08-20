@@ -5,7 +5,7 @@ final class ScheduleSwitchCell : UITableViewCell {
     //MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .textBackGround
+        backgroundColor = Colors.lightGray
         selectionStyle = .none
         accessoryType = .none
         addSubview(switchView)

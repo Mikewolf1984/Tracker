@@ -17,7 +17,7 @@ final class StatisticsViewController: UIViewController {
     private var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .systemBackground
+        tableView.backgroundColor = Colors.lightGray
         tableView.separatorStyle = .none
         
         return tableView
@@ -36,19 +36,15 @@ final class StatisticsViewController: UIViewController {
         return label
     }()
     private var allCount: Int = 0
-    private let recordsStore = TrackerRecordStore.shared
+    private let dataProvider = TrackersDataProvider.shared
     
     
     //MARK: - override methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        do {
-            try recordsStore.updateRecords()
-        }
-        catch {
-            print ("Error updating store")
-        }
-        allCount = recordsStore.records.count
+        
+        let completedTrackers = Set(dataProvider.getCompletedTrackers())
+        allCount = completedTrackers.count
         setupTitleLabel()
         view.backgroundColor = .systemBackground
         if allCount == 0 {
@@ -113,8 +109,8 @@ final class StatisticsViewController: UIViewController {
     }
     //MARK: - objc methods
     @objc private func handleTrackerRecordsDidChange() {
-        
-        allCount = recordsStore.records.count
+        let completedTrackers = Set(dataProvider.getCompletedTrackers())
+        allCount = completedTrackers.count
         if allCount == 0 {
             setupDizzyView()
         } else {

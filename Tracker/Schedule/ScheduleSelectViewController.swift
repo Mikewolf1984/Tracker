@@ -40,7 +40,7 @@ final class ScheduleSelectViewController: UIViewController {
             let tableView: UITableView = UITableView()
             tableView.register(ScheduleSwitchCell.self, forCellReuseIdentifier: "scheduleSwitchCell")
             tableView.layer.cornerRadius = 16
-            tableView.backgroundColor = YPColors.ypBackGroundColor
+            tableView.backgroundColor = Colors.lightGray
             tableView.separatorStyle = .none
             return tableView
         }()

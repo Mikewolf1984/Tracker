@@ -40,7 +40,7 @@ final class CategorySelectController: UIViewController {
         let tableView: UITableView = UITableView()
         tableView.register(CategoryTableViewCell.self, forCellReuseIdentifier: "CategoryTableViewCell")
         tableView.layer.cornerRadius = 16
-        tableView.backgroundColor = YPColors.ypBackGroundColor
+        tableView.backgroundColor = Colors.lightGray
         tableView.separatorStyle = .none
         tableView.isHidden = true
         return tableView
@@ -100,7 +100,6 @@ final class CategorySelectController: UIViewController {
                     addButton.removeFromSuperview()
                 }
                 view.addSubview(selectButton)
-                selectButton.isHidden = false
                 configureButton(button: selectButton, isActive: true)
             } else {
                 view.addSubview(addButton)
@@ -110,6 +109,7 @@ final class CategorySelectController: UIViewController {
         } else {
             view.addSubview(addButton)
             addButton.isHidden = false
+            addButton.isEnabled = false
             configureButton(button: addButton, isActive: true)
         }
     }

@@ -18,12 +18,13 @@ final class TrackerStore: NSObject {
     //MARK: - public properties
     static let shared = TrackerStore()
     var trackers = [Tracker]()
-    var context: NSManagedObjectContext
+    
 
     //MARK: - private properties
     private let uiColorMarshalling = UIColorMarshalling()
     private let scheduleTransformer  = ScheduleTransformer()
-   
+    private let context: NSManagedObjectContext
+    
     //MARK: - override methods
     //MARK: - public methods
     func addNewTracker(_ tracker: Tracker, category: TrackerCategoryCD ) throws {
@@ -69,11 +70,6 @@ final class TrackerStore: NSObject {
         request.predicate = NSPredicate(format: "id == %@", id.uuidString)
         request.fetchLimit  = 1
         let result = try context.fetch(request).first as TrackerCD?
-        
-        let request2: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
-        let result2 = try context.fetch(request2)
-        
-        
         return result
    
     }

@@ -3,7 +3,7 @@
     <entity name="TrackerCategoryCD" representedClassName="TrackerCategoryCD" syncable="YES" codeGenerationType="class">
         <attribute name="name" attributeType="String"/>
         <attribute name="trackers" optional="YES" attributeType="Transformable" valueTransformerName="Tracker.TrackerCategoryTransformer"/>
-        <relationship name="trackersRS" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TrackerCD" inverseName="categoryRS" inverseEntity="TrackerCD"/>
+        <relationship name="trackersRS" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="TrackerCD" inverseName="categoryRS" inverseEntity="TrackerCD"/>
     </entity>
     <entity name="TrackerCD" representedClassName="TrackerCD" syncable="YES" codeGenerationType="class">
         <attribute name="color" attributeType="String"/>
@@ -13,12 +13,12 @@
         <attribute name="isHabit" attributeType="Boolean" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="schedule" attributeType="String"/>
-        <relationship name="categoryRS" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="TrackerCategoryCD" inverseName="trackersRS" inverseEntity="TrackerCategoryCD"/>
-        <relationship name="recordsRS" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TrackerRecordCD" inverseName="trackerRS" inverseEntity="TrackerRecordCD"/>
+        <relationship name="categoryRS" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="TrackerCategoryCD" inverseName="trackersRS" inverseEntity="TrackerCategoryCD"/>
+        <relationship name="recordsRS" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="TrackerRecordCD" inverseName="trackerRS" inverseEntity="TrackerRecordCD"/>
     </entity>
     <entity name="TrackerRecordCD" representedClassName="TrackerRecordCD" syncable="YES" codeGenerationType="class">
         <attribute name="date" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="trackerRS" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="TrackerCD" inverseName="recordsRS" inverseEntity="TrackerCD"/>
+        <relationship name="trackerRS" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="TrackerCD" inverseName="recordsRS" inverseEntity="TrackerCD"/>
     </entity>
 </model>

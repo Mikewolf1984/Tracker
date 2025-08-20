@@ -52,7 +52,7 @@ final class EmojiOrColorCell: UICollectionViewCell {
             contentView.layer.borderColor = UIColor.white.cgColor
             
             if isCellSelected {
-                contentView.backgroundColor = YPColors.ypBackGroundColor
+                contentView.backgroundColor = .systemBackground
             } else  {
                 contentView.backgroundColor = .white
             }

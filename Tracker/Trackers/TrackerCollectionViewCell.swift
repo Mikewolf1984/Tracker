@@ -27,7 +27,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         view.layer.masksToBounds = true
         view.backgroundColor = .blue
         view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor(named: "collectionCellBorderColor")?.cgColor
+        view.layer.borderColor = Colors.shadow?.cgColor ?? UIColor.white.cgColor
         return view
     }()
     private let emojiLabel: UILabel = {
@@ -48,7 +48,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     }()
     private let daysCounterLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .black
+        label.textColor = Colors.first
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.text = "0 дней"
         return label

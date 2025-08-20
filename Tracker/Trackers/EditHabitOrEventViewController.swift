@@ -27,7 +27,7 @@ final class EditHabitOrEventViewController: UIViewController {
         let tableView: UITableView = UITableView()
         tableView.register(AddTrackerCell.self, forCellReuseIdentifier: "cell")
         tableView.layer.cornerRadius = 16
-        tableView.backgroundColor = YPColors.ypBackGroundColor
+        tableView.backgroundColor = Colors.lightGray
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
         return tableView
@@ -48,7 +48,7 @@ final class EditHabitOrEventViewController: UIViewController {
         let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftView = leftPaddingView
         textField.leftViewMode = .always
-        textField.backgroundColor = YPColors.ypBackGroundColor
+        textField.backgroundColor = Colors.lightGray
         textField.layer.cornerRadius = 16
         
         let clearTextButton = UIButton(type: .custom)

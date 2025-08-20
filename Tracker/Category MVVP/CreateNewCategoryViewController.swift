@@ -59,7 +59,7 @@ final class CreateNewCategoryViewController: UIViewController {
         categoryNameTextField.placeholder = "Введите название категории"
         categoryNameTextField.font = .systemFont(ofSize: 17)
         categoryNameTextField.textColor = .black
-        categoryNameTextField.backgroundColor = YPColors.ypBackGroundColor
+        categoryNameTextField.backgroundColor = Colors.lightGray
         categoryNameTextField.layer.cornerRadius = 16
         categoryNameTextField.layer.borderWidth = 0
         categoryNameTextField.delegate = self
