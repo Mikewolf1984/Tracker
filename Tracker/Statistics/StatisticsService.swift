@@ -11,7 +11,7 @@ final class StatisticsService {
     
     // MARK: - public methods
     var isEmpty: Bool {
-        return ((trackerRecordStore?.records.isEmpty) != nil)
+        return trackerRecordStore.records.isEmpty
     }
     
     // MARK: - private properties

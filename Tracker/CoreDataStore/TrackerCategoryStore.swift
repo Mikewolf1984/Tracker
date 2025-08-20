@@ -8,28 +8,25 @@ protocol TrackerCategoryStoreDelegate: AnyObject {
 final class TrackerCategoryStore: NSObject {
     //MARK: - Init
     weak var delegate: TrackerCategoryStoreDelegate?
-    private init(context: NSManagedObjectContext) throws {
-        self.context = DataBaseStore.shared.context
+    private override init() {
+        
         super.init()
-        let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
-        self.categories = try self.getCategories()
+        
     }
     
     //MARK: - public properties
     var categories: [TrackerCategory] = []
-    static let shared = try? TrackerCategoryStore(context: DataBaseStore.shared.context)
+    static let shared = TrackerCategoryStore()
     //MARK: - private properties
-    private var context: NSManagedObjectContext
+    private let context = DataBaseStore.shared.context
     //MARK: - override methods
     //MARK: - public methods
     func createCategory(name: String) throws -> TrackerCategory {
         let newCategory = TrackerCategory(name: name, trackers: [])
-        let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
-        fetchRequest.resultType = .managedObjectIDResultType
-        let categoryCoreData = TrackerCategoryCD(context: context)
+        let categoryCoreData = TrackerCategoryCD(context: DataBaseStore.shared.context)
         categoryCoreData.name = name
         categoryCoreData.trackers = [] as NSObject
-        try context.save()
+        DataBaseStore.shared.saveContext()
         return newCategory
     }
     
@@ -46,11 +43,11 @@ final class TrackerCategoryStore: NSObject {
         for categoryCD in result {
             var trackers: [Tracker] = []
             for trackerID in categoryCD.trackers as? [UUID] ?? [] {
-                if let trackerCD = try TrackerStore.shared?.getTrackerById(trackerID)  {
-                    guard let tracker = TrackerStore.shared?.cdToTracker(trackerCD) else {continue}
+                if let trackerCD = try TrackerStore.shared.getTrackerById(trackerID)  {
+                    let tracker = TrackerStore.shared.cdToTracker(trackerCD)
                     trackers.append(tracker)
-                } else {return []}
                 }
+            }
             let category = TrackerCategory(name: categoryCD.name ?? "", trackers: trackers)
             categories.append(category)
         }
@@ -90,7 +87,7 @@ final class TrackerCategoryStore: NSObject {
         
         var nameToRemove = String()
         var newTrackers: [Tracker] = []
-       
+        
         var categories: [TrackerCategory] = []
         categories = try getCategories()
         for category in categories {
@@ -116,10 +113,10 @@ final class TrackerCategoryStore: NSObject {
     
     func deleteCategoryFromCD(category: TrackerCategory) throws {
         /* let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "name == %@", category.name)
-        guard let category = try context.fetch(fetchRequest).first else { return }
-        context.delete(category)
-        */
+         fetchRequest.predicate = NSPredicate(format: "name == %@", category.name)
+         guard let category = try context.fetch(fetchRequest).first else { return }
+         context.delete(category)
+         */
         try context.save()
     }
     

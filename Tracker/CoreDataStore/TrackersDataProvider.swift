@@ -25,13 +25,13 @@ final class TrackersDataProvider: NSObject {
     }
     
     //MARK: - Init
-    private init(context: NSManagedObjectContext) throws{
-        self.context = DataBaseStore.shared.context
+    private override init(){
+        super.init()
     }
     //MARK: public properties
-    static let shared = try? TrackersDataProvider(context: DataBaseStore.shared.context)
+    static let shared = TrackersDataProvider()
     //MARK: private properties
-    private var context = DataBaseStore.shared.context
+    private let context = DataBaseStore.shared.context
     private let trackersDataStore = TrackerStore.shared
     private let trackerRecordStore = TrackerRecordStore.shared
     private let categoryDataStore = TrackerCategoryStore.shared
@@ -55,19 +55,19 @@ final class TrackersDataProvider: NSObject {
     
     func getAllTrackers() -> [Tracker] {
        
-        trackersDataStore?.updateTrackersStore()
-        guard let result = trackersDataStore?.trackers else { return [] }
+        trackersDataStore.updateTrackersStore()
+        let result = trackersDataStore.trackers
         return result
     }
     
     func getAllCategories() -> [TrackerCategory] {
-        categoryDataStore?.updateCategoryStore()
-        guard let result = categoryDataStore?.categories else { return [] }
+        categoryDataStore.updateCategoryStore()
+        let result = categoryDataStore.categories
         return result
     }
     
     func getAllRecords() -> [TrackerRecord] {
-        let records = trackerRecordStore?.records ?? []
+        let records = trackerRecordStore.records
         return Array(records)
     }
     
@@ -118,8 +118,8 @@ extension TrackersDataProvider: DataProviderProtocol {
         {
             let trackerCatIDs = fetchedResultsController.object(at: IndexPath(row: 0, section: section) ).trackers as? [UUID] ?? []
             for trackerId in trackerCatIDs {
-                guard let trackerCD = try trackersDataStore?.getTrackerById(trackerId) else {return []}
-                guard let tracker = trackersDataStore?.cdToTracker(trackerCD) else {return []}
+                guard let trackerCD = try trackersDataStore.getTrackerById(trackerId) else {return []}
+                let tracker = trackersDataStore.cdToTracker(trackerCD)
                 if tracker.schedule.contains(day) {
                     result.append(tracker)
                 }
@@ -137,8 +137,8 @@ extension TrackersDataProvider: DataProviderProtocol {
     func object(at indexPath: IndexPath, day: DayOfWeek, currentDate: String) -> TrackerObject {
         let trackersToday = todayTrackersForSection(day: day, section: indexPath.section)
         let tracker = trackersToday[indexPath.row]
-        let isCompleted = trackerRecordStore?.isCompletedInDate(for: tracker, date: currentDate) ?? false
-        let daysCount = trackerRecordStore?.recordsCount(for: tracker) ?? 0
+        let isCompleted = trackerRecordStore.isCompletedInDate(for: tracker, date: currentDate)
+        let daysCount = trackerRecordStore.recordsCount(for: tracker)
         return TrackerObject(tracker: tracker,
                              isCompleted: isCompleted, daysCount: daysCount)
     }
@@ -148,28 +148,21 @@ extension TrackersDataProvider: DataProviderProtocol {
     }
     
     func addTracker(_ tracker: Tracker, category: TrackerCategory)  throws {
-        guard  let categoryCD = try categoryDataStore?.getCategoryCDByName(category.name) else { return }
-        try trackersDataStore?.addNewTracker(tracker, category: categoryCD)
+        guard let categoryCD = try categoryDataStore.getCategoryCDByName(category.name) else { return  }
+        try trackersDataStore.addNewTracker(tracker, category: categoryCD)
     }
     
+   
     
     func deleteTracker(id: UUID) throws {
-        guard let trackerCD =  try trackersDataStore?.getTrackerById(id) else { return}
-        
-        print("Категорий: \(getAllCategories().count)")
-        
+        guard let trackerCD =  try trackersDataStore.getTrackerById(id) else { return}
         context.delete(trackerCD)
-        
-        print("Категорий: \(getAllCategories().count)")
-        
         try context.save()
     }
     
     func deleteRecords(for tracker: Tracker) throws {
-        try trackerRecordStore?.deleteAllRecords(for: tracker)
+        try trackerRecordStore.deleteAllRecords(for: tracker)
     }
-    
-    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

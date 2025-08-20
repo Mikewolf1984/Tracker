@@ -115,9 +115,9 @@ final class CreateNewCategoryViewController: UIViewController {
     @objc private func createCategoryButtonTapped() {
         guard let categoryName = categoryNameTextField.text, !categoryName.isEmpty else { return }
         do {
-            guard let newCategory = try categoryStore?.createCategory(name: categoryName) else { return }
+            let newCategory = try categoryStore.createCategory(name: categoryName)
             onCategoryCreated?(newCategory)
-            dataProvider?.refreshStore()
+            //dataProvider.refreshStore()
             self.dismiss(animated: true)
         } catch {
             print("Error creating category: \(error)")

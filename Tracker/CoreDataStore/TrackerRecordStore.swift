@@ -4,19 +4,21 @@ import UIKit
 final class TrackerRecordStore: NSObject {
     //MARK: - Init
     
-    private init(context: NSManagedObjectContext) throws {
-        self.context = DataBaseStore.shared.context
+    private override init() {
+        context = DataBaseStore.shared.context
         super.init()
         let fetchRequest: NSFetchRequest<TrackerRecordCD> = TrackerRecordCD.fetchRequest()
-        let trackerRecordsCD = try context.fetch(fetchRequest) as [TrackerRecordCD]
-        if trackerRecordsCD.isEmpty { return }
-        for record in trackerRecordsCD {
-            guard let id = record.id, let date = record.date else { return }
-            records.insert(TrackerRecord(id: id, date: date))
-        }
+        do {
+            let trackerRecordsCD = try context.fetch(fetchRequest) as [TrackerRecordCD]
+            if trackerRecordsCD.isEmpty { return }
+            for record in trackerRecordsCD {
+                guard let id = record.id, let date = record.date else { return }
+                records.insert(TrackerRecord(id: id, date: date))
+            }
+        } catch {print(error)}
     }
     //MARK: - public properties
-    static let shared = try? TrackerRecordStore(context: DataBaseStore.shared.context)
+    static let shared = TrackerRecordStore()
     var records =  Set<TrackerRecord>()
     //MARK: - private properties
     private var context: NSManagedObjectContext
@@ -45,7 +47,7 @@ final class TrackerRecordStore: NSObject {
     func removeRecord(_ record: TrackerRecord) throws {
         let fetchRequest: NSFetchRequest<TrackerRecordCD> = TrackerRecordCD.fetchRequest()
         fetchRequest.resultType = .managedObjectIDResultType
-        let recordsResult = try context.fetch(fetchRequest) as? NSAsynchronousFetchResult<NSFetchRequestResult> ?? nil
+        let recordsResult = try context.execute(fetchRequest) as? NSAsynchronousFetchResult<NSFetchRequestResult> ?? nil
         let idS = recordsResult?.finalResult as? [NSManagedObjectID] ?? []
         if idS.isEmpty { return }
         for id in idS {

@@ -151,7 +151,7 @@ extension TrackerCollectionViewCell: UIContextMenuInteractionDelegate {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let editAction = UIAction(title: NSLocalizedString("edit_tracker", comment: "Редактировать" ) , image: nil) { [ weak self ] _ in
                 guard let self, let tracker = self.tracker else { return }
-                //TODO: self.onEditButtonTapped?(tracker)
+                self.onEditButtonTapped?(tracker)
             }
             
             let deleteAction = UIAction(title: "", image: nil) { [ weak self ] _ in

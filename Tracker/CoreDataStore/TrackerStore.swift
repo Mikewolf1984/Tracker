@@ -9,14 +9,14 @@ protocol TrackerDataStore {
 
 final class TrackerStore: NSObject {
     //MARK: - Init
-    private init(context: NSManagedObjectContext) throws {
-       self.context = DataBaseStore.shared.context
+    private override init() {
+       context = DataBaseStore.shared.context
         self.trackers = []
         super.init()
     }
     
     //MARK: - public properties
-    static let shared = try? TrackerStore(context: DataBaseStore.shared.context)
+    static let shared = TrackerStore()
     var trackers = [Tracker]()
     var context: NSManagedObjectContext
 
@@ -35,8 +35,22 @@ final class TrackerStore: NSObject {
         trackerCoreData.emoji = tracker.emoji
         trackerCoreData.schedule = scheduleTransformer.hexString(from: tracker.schedule)
         trackerCoreData.date = tracker.date
-       // trackerCoreData.trackerToCategoryRS = category
+        trackerCoreData.categoryRS  = category
         try context.save()
+    }
+    
+    func editTracker(_ tracker: Tracker, category: TrackerCategoryCD ) throws {
+        guard let trackerCoreData = try getTrackerById(tracker.id) else {return}
+        trackerCoreData.id = tracker.id
+        trackerCoreData.isHabit = tracker.type == .habit
+        trackerCoreData.name = tracker.name
+        trackerCoreData.color = uiColorMarshalling.hexString(from: tracker.color)
+        trackerCoreData.emoji = tracker.emoji
+        trackerCoreData.schedule = scheduleTransformer.hexString(from: tracker.schedule)
+        trackerCoreData.date = tracker.date
+        trackerCoreData.categoryRS  = category
+        try context.save()
+        updateTrackersStore()
     }
     
     func cdToTracker(_ cd: TrackerCD) -> Tracker {
@@ -53,8 +67,12 @@ final class TrackerStore: NSObject {
     func getTrackerById(_ id: UUID) throws -> TrackerCD? {
         let request: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id.uuidString)
-        request.fetchLimit = 1
+        request.fetchLimit  = 1
         let result = try context.fetch(request).first as TrackerCD?
+        
+        let request2: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
+        let result2 = try context.fetch(request2)
+        
         
         return result
    

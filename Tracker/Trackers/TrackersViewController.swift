@@ -3,6 +3,8 @@ import Foundation
 
 final class TrackersViewController: UIViewController {
     
+    
+    
     //MARK: - public properties
     
     var currentDate: Date = Date()
@@ -76,23 +78,24 @@ final class TrackersViewController: UIViewController {
         } else {
             currentDateString = ""
         }
-        dateRefresh()
+        
         dateFormatter.dateFormat = "yyyy-MM-dd"
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
         collectionView.register(TrackersSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
         configureTrackersView()
-        showTrackersOrStub()
+        dateRefresh()
+        //showTrackersOrStub()
     }
     
     //MARK: - private methods
     private func updateModelFromDB ()
     {
-        trackers = dataProvider?.getAllTrackers() ?? []
-        categories = dataProvider?.getAllCategories() ?? []
+        trackers = dataProvider.getAllTrackers()
+        categories = dataProvider.getAllCategories()
       
-        completedTrackers = Set(dataProvider?.getCompletedTrackers() ?? [])
+        completedTrackers = Set(dataProvider.getCompletedTrackers())
         
     }
     
@@ -134,9 +137,10 @@ final class TrackersViewController: UIViewController {
         alert.addAction(UIAlertAction(title: deleteTitle, style: .destructive, handler: { [weak self] _ in
             guard let self else { return }
             do {
-                try dataProvider?.deleteTracker(id: tracker.id)
-                updateModelFromDB()
-                collectionView.reloadData()
+                try dataProvider.deleteTracker(id: tracker.id)
+                
+                
+                self.dateRefresh()
                 
             } catch {
                 print("Error deleting tracker: \(error)")
@@ -149,7 +153,7 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
     
     
     private func showTrackersOrStub () {
-        if categories.count > 0 {
+        if (categories.count)*(trackers.count) > 0 {
             view.addSubview(collectionView)
             collectionView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
@@ -243,6 +247,8 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
         }
         updateModelFromDB()
         filterCategoriesByCurrentDate()
+        showTrackersOrStub()
+        
     }
     
     func isTrackerCompletedToday(_ tracker: Tracker) -> Bool {
@@ -273,6 +279,14 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
         collectionView.reloadData()
         dismiss(animated: true)
     }
+    
+    @objc  private func handleEditHabit(trackerId: UUID) {
+        guard let tracker = trackers.first(where: { $0.id == trackerId }) else { return }
+        
+        let editHabitOrEventViewController = EditHabitOrEventViewController(tracker: tracker, trackerType: .habit, delegate: self, categories: categories)
+        editHabitOrEventViewController.modalPresentationStyle = .automatic
+        present(editHabitOrEventViewController, animated: true, completion: nil)
+    }
 }
 
 //MARK:  - Extensions
@@ -295,43 +309,13 @@ extension TrackersViewController: UICollectionViewDataSource {
         let isCompleted = isTrackerCompletedToday(trackerToShow)
         cell.configureCell(with: trackerToShow, daysCount: daysCount, isCompleted: isCompleted, delegate: self)
 
-       /* cell.onEditButtonTapped = { [weak self] tracker in
-            AnalyticsService.shared.reportEvent(
-                event: "click",
-                params: [
-                    "screen": "Main",
-                    "item": "edit"
-                ]
-            )
-            
-            guard let self else { return }
-            let showScheduleOption = tracker.schedule != nil
-            
-            let selectedCategory = self.filteredCategories[indexPath.section]
-                        
-            let editTrackerViewController = CreateTrackerViewController(categoryStore: categoryStore, showScheduleOption: showScheduleOption, trackerToEdit: tracker, category: selectedCategory)
-            
-            editTrackerViewController.onHabitCreated = { [ weak self ] in
-                self?.dismiss(animated: true)
-                self?.trackersCollectionView.reloadData()
-            }
-            
-            self.present(editTrackerViewController, animated: true)
-        } */
-        
-        cell.onDeleteButtonTapped = { [weak self] tracker in
-            
-            self?.showDeleteConfirmationAlert(for: tracker)
-            /*do {
-                try self?.dataProvider?.deleteTracker(id: tracker.id)
-                self?.updateModelFromDB()
-                collectionView.reloadData()
-            } catch {
-                print("Error deleting tracker")
-            }*/
+       cell.onEditButtonTapped = { [weak self] tracker in
+           self?.handleEditHabit(trackerId: tracker.id)
         }
         
-        
+        cell.onDeleteButtonTapped = { [weak self] tracker in
+            self?.showDeleteConfirmationAlert(for: tracker)
+        }
         return cell
     }
 }
@@ -378,6 +362,32 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 }
 
 
+extension TrackersViewController: EditHabitOrTrackerDelegate {
+    func trackerDidEdited(tracker: Tracker, category: TrackerCategory) {
+       
+        do {
+            guard let categoryCD = try trackerCategoryStore.getCategoryCDByName(category.name) else {return}
+            try trackerStore.editTracker(tracker, category: categoryCD)
+            
+        } catch {
+            print ("error editing")
+            return
+        }
+        dateRefresh()
+        updateModelFromDB()
+        showTrackersOrStub()
+        
+        dismiss(animated: true)
+        
+    }
+    
+   /* func trackerDidCanceled() {
+        collectionView.reloadData()
+        dismiss(animated: true)
+    }*/
+}
+
+
 extension TrackersViewController: AddHabitOrTrackerDelegate {
     func trackerDidCreated(tracker: Tracker, category: TrackerCategory) {
         let newTracker: Tracker
@@ -393,8 +403,8 @@ extension TrackersViewController: AddHabitOrTrackerDelegate {
         
         updatedTrackers.append(newTracker)
         do {
-            try dataProvider?.addTracker(newTracker, category: category)
-            try trackerCategoryStore?.addTrackerToCategory(newTracker, categoryName: category.name)
+            try dataProvider.addTracker(newTracker, category: category)
+            try trackerCategoryStore.addTrackerToCategory(newTracker, categoryName: category.name)
         } catch {
             print ("error creating")
             return
@@ -421,7 +431,7 @@ extension TrackersViewController: CompleteButtonDelegate {
             let record = TrackerRecord(id: tracker.id, date: currentDateString)
             
             do {
-                try trackerRecordStore?.removeRecord(record) }
+                try trackerRecordStore.removeRecord(record) }
             catch {
                 print("Error removing record")
             }
@@ -433,7 +443,7 @@ extension TrackersViewController: CompleteButtonDelegate {
                 let newRecord = TrackerRecord(id: tracker.id, date: currentDateString)
                 completedTrackers.insert(newRecord)
                 do {
-                    try trackerRecordStore?.addRecord(newRecord)
+                    try trackerRecordStore.addRecord(newRecord)
                 } catch {
                     print("Error adding record")
                 }
