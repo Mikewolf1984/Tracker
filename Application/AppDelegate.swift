@@ -1,5 +1,6 @@
 import UIKit
 import CoreData
+import AppMetricaCore
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -10,6 +11,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = StartScreenViewController()
         window?.makeKeyAndVisible()
         TrackerCategoryTransformer.register()
+        if let configuration = AppMetricaConfiguration(apiKey: yandexAPIKey) { 
+               AppMetrica.activate(with: configuration)
+           }
+        
         return true
     }
 }

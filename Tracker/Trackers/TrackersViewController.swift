@@ -69,6 +69,23 @@ final class TrackersViewController: UIViewController {
     }()
     
     //MARK: - override methods
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        AnalyticsService.shared.reportEvent(
+            event: "open",
+            params: ["screen": "Main"]
+        )
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        AnalyticsService.shared.reportEvent(
+            event: "close",
+            params: ["screen": "Main"]
+        )
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         updateModelFromDB ()
@@ -264,12 +281,26 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
     
     //MARK: - objc methods
     @objc  private func addButtonTouch() {
+        AnalyticsService.shared.reportEvent(
+            event: "click",
+            params: [
+                "screen": "Main",
+                "item": "add_track"
+            ]
+        )
         let addNewTrackerViewController = AddNewTrackerViewController(delegate: self, categories: categories)
         addNewTrackerViewController.modalPresentationStyle = .automatic
         present(addNewTrackerViewController, animated: true, completion: nil)
     }
     
     @objc  private func filtersButtonTouch() {
+        AnalyticsService.shared.reportEvent(
+            event: "click",
+            params: [
+                "screen": "Main",
+                "item": "filter"
+            ]
+        )
     }
     
     @objc  private func dateDidChanged() {
@@ -287,6 +318,8 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
         editHabitOrEventViewController.modalPresentationStyle = .automatic
         present(editHabitOrEventViewController, animated: true, completion: nil)
     }
+    
+   
 }
 
 //MARK:  - Extensions
@@ -310,10 +343,24 @@ extension TrackersViewController: UICollectionViewDataSource {
         cell.configureCell(with: trackerToShow, daysCount: daysCount, isCompleted: isCompleted, delegate: self)
 
        cell.onEditButtonTapped = { [weak self] tracker in
+           AnalyticsService.shared.reportEvent(
+               event: "click",
+               params: [
+                   "screen": "Main",
+                   "item": "edit"
+               ]
+           )
            self?.handleEditHabit(trackerId: tracker.id)
         }
         
         cell.onDeleteButtonTapped = { [weak self] tracker in
+            AnalyticsService.shared.reportEvent(
+                event: "click",
+                params: [
+                    "screen": "Main",
+                    "item": "delete"
+                ]
+            )
             self?.showDeleteConfirmationAlert(for: tracker)
         }
         return cell

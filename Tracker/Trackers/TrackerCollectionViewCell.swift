@@ -140,6 +140,13 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     //MARK: - objc methods
     @objc  private func toggleCompleteButton() {
+        AnalyticsService.shared.reportEvent(
+            event: "click",
+            params: [
+                "screen": "Main",
+                "item": "track"
+            ]
+        )
         guard let tracker = tracker else { return }
         delegate?.didTapCompleteButton(tracker: tracker)
         redrawCompleteButton(isCompleted: !isCompleted)
