@@ -115,7 +115,6 @@ final class CategorySelectController: UIViewController {
             addButton.isEnabled = false
             configureButton(button: addButton, isActive: true)
         }
-       
     }
     
     private func configureButton(button: UIButton, isActive: Bool) {

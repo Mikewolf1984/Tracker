@@ -2,13 +2,12 @@ import UIKit
 
 
 final class ScheduleSelectViewController: UIViewController {
-    //MARK: - Init
+    //MARK: - init
     init(selectedDays: [DayOfWeek], delegate: ScheduleControllerDelegate?) {
         self.selectedDays = selectedDays
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -51,7 +50,6 @@ final class ScheduleSelectViewController: UIViewController {
             tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             tableView.widthAnchor.constraint(equalToConstant: view.frame.width  - 32),
             tableView.heightAnchor.constraint(equalToConstant: CGFloat(7*75))])
-        
         tableView.delegate = self
         tableView.dataSource = self
         let readyButton: UIButton = {
@@ -62,7 +60,6 @@ final class ScheduleSelectViewController: UIViewController {
             button.setTitle("Готово", for: .normal)
             button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
             button.setTitleColor(.white, for: .normal)
-            
             button.addTarget(self, action: #selector(readyButtonTouch), for: .touchUpInside)
             return button
         }()
@@ -88,11 +85,9 @@ extension ScheduleSelectViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         daysOfWeek.count
     }
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         75
     }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleSwitchCell else {return}
         cell.switchChangeState()

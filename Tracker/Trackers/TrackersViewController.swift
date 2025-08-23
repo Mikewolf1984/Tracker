@@ -2,20 +2,17 @@ import UIKit
 import Foundation
 
 final class TrackersViewController: UIViewController {
-    
-    
-    
     //MARK: - public properties
     
     var currentDate: Date = Date()
     var currentDateString: String = ""
     var currentDayOfWeek: DayOfWeek = .monday
     var completedTrackers: Set<TrackerRecord> = []
+    
     //MARK: - private properties
     
     private var selectedFilter: TrackerFilter = .all
     private var searchText: String = ""
-    
     private let daysOfWeek: [DayOfWeek] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     private let cellIdentifier = "trackercell"
     private var trackers: [Tracker] = []
@@ -23,12 +20,10 @@ final class TrackersViewController: UIViewController {
     private var categories: [TrackerCategory] = []
     private var filteredCategories: [TrackerCategory] = []
     private var dateFormatter = DateFormatter()
-    
     private let trackerStore = TrackerStore.shared
     private let trackerCategoryStore = TrackerCategoryStore.shared
     private let trackerRecordStore = TrackerRecordStore.shared
     private let dataProvider = TrackersDataProvider.shared
-    
     private  let trackersLabel = UILabel()
     private  let searchField: UISearchTextField = {
         let searchField: UISearchTextField = UISearchTextField()
@@ -67,7 +62,6 @@ final class TrackersViewController: UIViewController {
     
     let dizzyImageView = UIImageView()
     let dizzyLabel = UILabel()
-   
     
     private var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -78,9 +72,9 @@ final class TrackersViewController: UIViewController {
     }()
     
     //MARK: - override methods
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         AnalyticsService.shared.reportEvent(
             event: "open",
             params: ["screen": "Main"]
@@ -89,7 +83,6 @@ final class TrackersViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
         AnalyticsService.shared.reportEvent(
             event: "close",
             params: ["screen": "Main"]
@@ -116,33 +109,19 @@ final class TrackersViewController: UIViewController {
         dateRefresh()
         filteredCategories = filterVisibleCategories(with: selectedFilter)
         showTrackersOrStub()
-        
         let tapGesture = UITapGestureRecognizer(target: self,
                                                 action: #selector(hideKeyboard))
         tapGesture.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tapGesture)
     }
     
-    //MARK:  - public methods
-    
-    func configureForTests()
-     {
-         filteredCategories = []
-         categories = []
-         trackers = []
-         
-     }
-    
     //MARK: - private methods
-       
-   
+    
     private func updateModelFromDB ()
     {
         trackers = dataProvider.getAllTrackers()
         categories = dataProvider.getAllCategories()
-      
         completedTrackers = Set(dataProvider.getCompletedTrackers())
-        
     }
     
     private func filterVisibleCategories(with filter: TrackerFilter) -> [TrackerCategory] {
@@ -151,52 +130,47 @@ final class TrackersViewController: UIViewController {
         for category in categories {
             var filteredTrackers = [Tracker]()
             if !category.trackers.isEmpty {
-               
-                    switch filter {
-                    case .completed:
-                        for tracker in category.trackers {
-                            if isTrackerCompletedToday(tracker)&&(tracker.schedule.contains(currentDayOfWeek))  {
-                                filteredTrackers.append(tracker)
-                            }
-                        }
-                    case .uncompleted:
-                        for tracker in category.trackers {
-                            if !isTrackerCompletedToday(tracker)&&(tracker.schedule.contains(currentDayOfWeek))  {
-                                filteredTrackers.append(tracker)
-                            }
-                        }
-                    case .today:
-                        currentDate = Date()
-                        datePickerButton.setDate(currentDate, animated: true)
-                        dateRefresh()
-                        for tracker in category.trackers {
-                            if tracker.schedule.contains(currentDayOfWeek)  {
-                                filteredTrackers.append(tracker)
-                            }
-                        }
-                    case .all:
-                        for tracker in category.trackers {
-                            if tracker.schedule.contains(currentDayOfWeek)  {
-                                filteredTrackers.append(tracker)
-                            }
+                switch filter {
+                case .completed:
+                    for tracker in category.trackers {
+                        if isTrackerCompletedToday(tracker)&&(tracker.schedule.contains(currentDayOfWeek))  {
+                            filteredTrackers.append(tracker)
                         }
                     }
-                    if filteredTrackers.count>0
-                    {result.append(TrackerCategory(name: category.name, trackers: filteredTrackers))}
+                case .uncompleted:
+                    for tracker in category.trackers {
+                        if !isTrackerCompletedToday(tracker)&&(tracker.schedule.contains(currentDayOfWeek))  {
+                            filteredTrackers.append(tracker)
+                        }
+                    }
+                case .today:
+                    currentDate = Date()
+                    datePickerButton.setDate(currentDate, animated: true)
+                    dateRefresh()
+                    for tracker in category.trackers {
+                        if tracker.schedule.contains(currentDayOfWeek)  {
+                            filteredTrackers.append(tracker)
+                        }
+                    }
+                case .all:
+                    for tracker in category.trackers {
+                        if tracker.schedule.contains(currentDayOfWeek)  {
+                            filteredTrackers.append(tracker)
+                        }
+                    }
                 }
+                if filteredTrackers.count>0
+                {result.append(TrackerCategory(name: category.name, trackers: filteredTrackers))}
             }
-            
-       return result
-     }
-    
-    
+        }
+        
+        return result
+    }
     
     private func showDeleteConfirmationAlert(for tracker: Tracker) {
         let alert = UIAlertController(title: nil, message: "", preferredStyle: .actionSheet)
-        
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
-
         let title = NSAttributedString(
             string: NSLocalizedString("delete_tracker_confirm", comment: "подтверждение удаления"),
             attributes: [
@@ -206,7 +180,6 @@ final class TrackersViewController: UIViewController {
             ]
         )
         alert.setValue(title, forKey: "attributedTitle")
-        
         let deleteTitle =  NSLocalizedString("delete_tracker", comment: "Удалить")
         alert.addAction(UIAlertAction(title: deleteTitle, style: .destructive, handler: { [weak self] _ in
             guard let self else { return }
@@ -216,19 +189,16 @@ final class TrackersViewController: UIViewController {
                 dateRefresh()
                 filteredCategories = filterVisibleCategories(with: selectedFilter)
                 showTrackersOrStub()
-                
             } catch {
                 print("Error deleting tracker: \(error)")
             }
         }))
-let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить")
+        let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить")
         alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: nil))
         present(alert, animated: true)
     }
     
-    
     private func showTrackersOrStub () {
-        
         if (filteredCategories.count)*trackers.count > 0 {
             view.addSubview(collectionView)
             collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -248,22 +218,21 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
                 dizzyLabel.removeFromSuperview()
             }
         } else {
-                
             if collectionView.superview != nil {
                 collectionView.removeFromSuperview()
             }
-                view.addSubview(dizzyImageView)
-                dizzyImageView.translatesAutoresizingMaskIntoConstraints = false
-                dizzyImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
-                dizzyImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor).isActive = true
-                dizzyImageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
-                dizzyImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-               dizzyLabel.font = .systemFont(ofSize: 12, weight: .medium)
-                dizzyLabel.textColor = ypColors.ypFirst
-                view.addSubview(dizzyLabel)
-                dizzyLabel.translatesAutoresizingMaskIntoConstraints = false
-                dizzyLabel.centerXAnchor.constraint(equalTo: dizzyImageView.centerXAnchor).isActive = true
-                dizzyLabel.topAnchor.constraint(equalTo: dizzyImageView.bottomAnchor, constant: 8).isActive = true
+            view.addSubview(dizzyImageView)
+            dizzyImageView.translatesAutoresizingMaskIntoConstraints = false
+            dizzyImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+            dizzyImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor).isActive = true
+            dizzyImageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            dizzyImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+            dizzyLabel.font = .systemFont(ofSize: 12, weight: .medium)
+            dizzyLabel.textColor = ypColors.ypFirst
+            view.addSubview(dizzyLabel)
+            dizzyLabel.translatesAutoresizingMaskIntoConstraints = false
+            dizzyLabel.centerXAnchor.constraint(equalTo: dizzyImageView.centerXAnchor).isActive = true
+            dizzyLabel.topAnchor.constraint(equalTo: dizzyImageView.bottomAnchor, constant: 8).isActive = true
             if trackers.count == 0 {
                 dizzyImageView.image = UIImage(named: "dizzy")
                 dizzyLabel.text = NSLocalizedString("what_to_track", comment: "Что будем отслеживать?")
@@ -271,10 +240,10 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
                 dizzyImageView.image = UIImage(named: "statisticsDizzy")
                 dizzyLabel.text = NSLocalizedString("nothing_found", comment: "Ничего не найдено")
             }
-            }
+        }
         if filterVisibleCategories(with: .all).count > 0 {
-        filtersButton.isHidden = false
-    } else { filtersButton.isHidden = true }
+            filtersButton.isHidden = false
+        } else { filtersButton.isHidden = true }
     }
     
     private func configureTrackersView() {
@@ -340,16 +309,12 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
     
     func isTrackerCompletedToday(_ tracker: Tracker) -> Bool {
         let trackerRecord = TrackerRecord(id: tracker.id, date: currentDateString)
-            return completedTrackers.contains(trackerRecord)
-        }
-        
-        func countOfCompletionsOfTracker(_ tracker: Tracker) -> Int {
-            let count = completedTrackers.filter { $0.id == tracker.id }.count
-            return count
-        }
-    
-  
-    
+        return completedTrackers.contains(trackerRecord)
+    }
+    func countOfCompletionsOfTracker(_ tracker: Tracker) -> Int {
+        let count = completedTrackers.filter { $0.id == tracker.id }.count
+        return count
+    }
     
     //MARK: - objc methods
     @objc private func hideKeyboard() {
@@ -359,7 +324,7 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
     @objc func textDidChange(_ searchField: UISearchTextField) {
         
         if let searchText = searchField.text, !searchText.isEmpty {
-        var result: [TrackerCategory] = []
+            var result: [TrackerCategory] = []
             for category in filteredCategories {
                 var filteredTrackers = [Tracker]()
                 for tracker in category.trackers {
@@ -404,17 +369,17 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
                 "item": "filter"
             ]
         )
-         let filtersViewController = FiltersViewController()
-            filtersViewController.selectedFilter = selectedFilter
-            filtersViewController.onFilterSelected = { [weak self] filter in
-                self?.selectedFilter = filter
-                self?.filteredCategories = self?.filterVisibleCategories(with: filter) ?? []
-                self?.showTrackersOrStub()
-                self?.collectionView.reloadData()
-            }
-            
-            present(filtersViewController, animated: true)
+        let filtersViewController = FiltersViewController()
+        filtersViewController.selectedFilter = selectedFilter
+        filtersViewController.onFilterSelected = { [weak self] filter in
+            self?.selectedFilter = filter
+            self?.filteredCategories = self?.filterVisibleCategories(with: filter) ?? []
+            self?.showTrackersOrStub()
+            self?.collectionView.reloadData()
         }
+        
+        present(filtersViewController, animated: true)
+    }
     
     
     @objc  private func dateDidChanged(_ sender: UIDatePicker) {
@@ -428,16 +393,13 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
     
     @objc  private func handleEditHabit(trackerId: UUID) {
         guard let tracker = trackers.first(where: { $0.id == trackerId }) else { return }
-        
         let editHabitOrEventViewController = EditHabitOrEventViewController(tracker: tracker, trackerType: .habit, delegate: self, categories: categories)
         editHabitOrEventViewController.modalPresentationStyle = .automatic
         present(editHabitOrEventViewController, animated: true, completion: nil)
     }
-    
-   
 }
 
-//MARK:  - Extensions
+//MARK:  - extensions
 
 extension TrackersViewController: UICollectionViewDataSource {
     
@@ -456,16 +418,16 @@ extension TrackersViewController: UICollectionViewDataSource {
         let daysCount = countOfCompletionsOfTracker(trackerToShow)
         let isCompleted = isTrackerCompletedToday(trackerToShow)
         cell.configureCell(with: trackerToShow, daysCount: daysCount, isCompleted: isCompleted, delegate: self)
-
-       cell.onEditButtonTapped = { [weak self] tracker in
-           AnalyticsService.shared.reportEvent(
-               event: "click",
-               params: [
-                   "screen": "Main",
-                   "item": "edit"
-               ]
-           )
-           self?.handleEditHabit(trackerId: tracker.id)
+        
+        cell.onEditButtonTapped = { [weak self] tracker in
+            AnalyticsService.shared.reportEvent(
+                event: "click",
+                params: [
+                    "screen": "Main",
+                    "item": "edit"
+                ]
+            )
+            self?.handleEditHabit(trackerId: tracker.id)
         }
         
         cell.onDeleteButtonTapped = { [weak self] tracker in
@@ -526,7 +488,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 extension TrackersViewController: EditHabitOrTrackerDelegate {
     func trackerDidEdited(tracker: Tracker, category: TrackerCategory) {
-       
+        
         do {
             guard let categoryCD = try trackerCategoryStore.getCategoryCDByName(category.name) else {return}
             try trackerStore.editTracker(tracker, category: categoryCD)
@@ -554,9 +516,7 @@ extension TrackersViewController: AddHabitOrTrackerDelegate {
             newTracker = Tracker(
                 id: tracker.id, type: tracker.type, name: tracker.name, color: tracker.color, emoji: tracker.emoji, schedule: tracker.schedule, date: "")
         }
-        
         var updatedTrackers = category.trackers
-        
         updatedTrackers.append(newTracker)
         do {
             try dataProvider.addTracker(newTracker, category: category)
@@ -569,9 +529,7 @@ extension TrackersViewController: AddHabitOrTrackerDelegate {
         updateModelFromDB()
         filteredCategories = filterVisibleCategories(with: selectedFilter)
         showTrackersOrStub()
-        
         dismiss(animated: true)
-        
     }
     
     func trackerDidCanceled() {
@@ -592,11 +550,8 @@ extension TrackersViewController: CompleteButtonDelegate {
             catch {
                 print("Error removing record")
             }
-            
         } else {
             if currentDate <= Date() {
-                
-                
                 let newRecord = TrackerRecord(id: tracker.id, date: currentDateString)
                 completedTrackers.insert(newRecord)
                 do {

@@ -19,7 +19,7 @@ final class CategoryTableViewCell: UITableViewCell {
     }()
     
     var viewModel: CategoryViewModel?
-
+    
     func configure(with viewModel: CategoryViewModel, isLastCell: Bool) {
         
         self.viewModel = viewModel
@@ -33,7 +33,7 @@ final class CategoryTableViewCell: UITableViewCell {
             categoryNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             categoryNameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ])
-       
+        
         if !isLastCell {
             addSubview(separatorLine)
             separatorLine.translatesAutoresizingMaskIntoConstraints = false

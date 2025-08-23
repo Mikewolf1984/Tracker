@@ -7,7 +7,7 @@ struct TrackerObject {
     let daysCount: Int
 }
 protocol DataProviderDelegate: AnyObject {
-    //TODO: func didUpdate(_ update: TrackerStoreUpdate)
+    
 }
 
 protocol DataProviderProtocol {
@@ -54,7 +54,7 @@ final class TrackersDataProvider: NSObject {
     }
     
     func getAllTrackers() -> [Tracker] {
-       
+        
         trackersDataStore.updateTrackersStore()
         let result = trackersDataStore.trackers
         return result
@@ -85,11 +85,8 @@ final class TrackersDataProvider: NSObject {
         return result
     }
 }
-
-// MARK: - DataProviderProtocol
+//MARK: - extensions
 extension TrackersDataProvider: DataProviderProtocol {
-   
-    
     func numberOfSectionsByDay(day: DayOfWeek)-> Int {
         var result :Int = 0
         let allSections = fetchedResultsController.sections?.count ?? 0
@@ -152,24 +149,24 @@ extension TrackersDataProvider: DataProviderProtocol {
         try trackersDataStore.addNewTracker(tracker, category: categoryCD)
     }
     
-   func deleteTracker(id: UUID) throws {
-    guard let trackerCD =  try trackersDataStore.getTrackerById(id) else { return}
-       guard let categoryCD = trackerCD.categoryRS else {return}
-       context.delete(trackerCD)
-       let oldTrackes = categoryCD.trackers as? [UUID]
-       var newTrackers = [UUID]()
-       
-       for trackerID in oldTrackes ?? [] {
-           if trackerID != id {
-               newTrackers.append(trackerID)
-           }
-       }
-       if !newTrackers.isEmpty {
-           categoryCD.trackers = newTrackers as NSObject
-       } else {
-           context.delete(categoryCD)
-       }
-       try context.save()
+    func deleteTracker(id: UUID) throws {
+        guard let trackerCD =  try trackersDataStore.getTrackerById(id) else { return}
+        guard let categoryCD = trackerCD.categoryRS else {return}
+        context.delete(trackerCD)
+        let oldTrackes = categoryCD.trackers as? [UUID]
+        var newTrackers = [UUID]()
+        
+        for trackerID in oldTrackes ?? [] {
+            if trackerID != id {
+                newTrackers.append(trackerID)
+            }
+        }
+        if !newTrackers.isEmpty {
+            categoryCD.trackers = newTrackers as NSObject
+        } else {
+            context.delete(categoryCD)
+        }
+        try context.save()
     }
     
     func deleteRecords(for tracker: Tracker) throws {
@@ -177,7 +174,6 @@ extension TrackersDataProvider: DataProviderProtocol {
     }
 }
 
-// MARK: - NSFetchedResultsControllerDelegate
 extension TrackersDataProvider: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         

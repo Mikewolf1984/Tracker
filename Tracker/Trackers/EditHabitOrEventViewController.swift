@@ -2,7 +2,7 @@ import UIKit
 
 final class EditHabitOrEventViewController: UIViewController {
     
-    //MARK: - Init
+    //MARK: - init
     init(tracker: Tracker, trackerType: TrackerType, delegate: EditHabitOrTrackerDelegate, categories: [TrackerCategory]) {
         self.trackerType = trackerType
         self.tracker = tracker
@@ -10,7 +10,6 @@ final class EditHabitOrEventViewController: UIViewController {
         self.categories = categories
         super.init(nibName: nil, bundle: nil)
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -50,13 +49,11 @@ final class EditHabitOrEventViewController: UIViewController {
         textField.leftViewMode = .always
         textField.backgroundColor = ypColors.ypBackGroundColor
         textField.layer.cornerRadius = 16
-        
         let clearTextButton = UIButton(type: .custom)
         let xMarkImage = UIImage(named: "xmark.circle")
         clearTextButton.setImage(xMarkImage, for: .normal)
         clearTextButton.frame = CGRect(x: 0, y: 0, width: 17, height: 17)
         clearTextButton.addTarget(self, action: #selector(didTapClearTextButton), for: .touchUpInside)
-        
         let rightPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: clearTextButton.frame.width + 12, height: clearTextButton.frame.height))
         rightPaddingView.addSubview(clearTextButton)
         textField.rightView = rightPaddingView
@@ -206,8 +203,6 @@ final class EditHabitOrEventViewController: UIViewController {
         view.addSubview(emojiOrColorCollectionView)
         emojiOrColorCollectionView.translatesAutoresizingMaskIntoConstraints = false
         updateConstraints()
-        
-        
     }
     
     private func updateConstraints() {

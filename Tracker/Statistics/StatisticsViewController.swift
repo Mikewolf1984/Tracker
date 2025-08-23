@@ -23,7 +23,6 @@ final class StatisticsViewController: UIViewController {
         return tableView
     }()
     
-    
     private let dizzyView = UIImageView(image: UIImage(named: "statisticsDizzy"))
     private let dizzyLabel: UILabel = {
         let label = UILabel()
@@ -32,7 +31,6 @@ final class StatisticsViewController: UIViewController {
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         label.textColor = ypColors.ypFirst
         label.text = "Анализировать пока нечего"
-        
         return label
     }()
     private var allCount: Int = 0
@@ -136,7 +134,6 @@ extension StatisticsViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: StatisticsTableViewCell.reuseIdentifier, for: indexPath) as? StatisticsTableViewCell else {
             return UITableViewCell()
         }
-        
         switch indexPath.row {
         case 0:
             cell.configure(counter: 0, statistics: "Лучший период")

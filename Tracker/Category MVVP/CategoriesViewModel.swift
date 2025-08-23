@@ -22,7 +22,6 @@ final class CategoriesViewModel {
     // MARK: - public methods
     func addCategory(_ newCategory: TrackerCategory) {
         categories.append(CategoryViewModel(categoryName: newCategory.name))
-        
         selectedCategory = newCategory
     }
     

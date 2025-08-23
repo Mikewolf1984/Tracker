@@ -4,7 +4,6 @@ import Foundation
 final class TrackerCategoryTransformer: ValueTransformer {
     override class func transformedValueClass() -> AnyClass { NSData.self }
     override class func allowsReverseTransformation() -> Bool { true }
-    
     override func transformedValue(_ value: Any?) -> Any? {
         guard let trackerIDs = value as? [UUID] else { return nil }
         return try? JSONEncoder().encode(trackerIDs)

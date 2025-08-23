@@ -4,9 +4,7 @@ final class CreateNewCategoryViewController: UIViewController {
     
     // MARK: - public properties
     var category: TrackerCategory?
-    
     var categoryName: String?
-    
     var onCategoryCreated: ((TrackerCategory) -> Void)?
     
     // MARK: - private properties
@@ -69,7 +67,6 @@ final class CreateNewCategoryViewController: UIViewController {
         categoryNameTextField.layer.borderWidth = 0
         categoryNameTextField.delegate = self
         categoryNameTextField.addTarget(self, action: #selector(categoryNameTextFieldDidChange), for: .editingChanged)
-        
         let paddingView = UIView(
             frame: CGRect(
                 x: 0, y: 0, width: 16, height: categoryNameTextField.frame.height))
@@ -121,7 +118,6 @@ final class CreateNewCategoryViewController: UIViewController {
         do {
             let newCategory = try categoryStore.createCategory(name: categoryName)
             onCategoryCreated?(newCategory)
-           
             self.dismiss(animated: true)
         } catch {
             print("Error creating category: \(error)")

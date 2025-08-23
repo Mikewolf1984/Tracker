@@ -19,7 +19,7 @@ final class AddHabitOrEventViewController: UIViewController {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = ypColors.ypSecond
         return collectionView
     }()
     private let tableView: UITableView = {
@@ -117,7 +117,7 @@ final class AddHabitOrEventViewController: UIViewController {
     //MARK: - override methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = ypColors.ypSecond
         configureView()
         tableView.delegate = self
         tableView.dataSource = self
@@ -158,8 +158,6 @@ final class AddHabitOrEventViewController: UIViewController {
         view.addSubview(emojiOrColorCollectionView)
         emojiOrColorCollectionView.translatesAutoresizingMaskIntoConstraints = false
         updateConstraints()
-        
-        
     }
     
     private func updateConstraints() {
@@ -297,7 +295,6 @@ extension AddHabitOrEventViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         tableViewData.count
     }
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         75
     }

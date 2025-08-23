@@ -2,13 +2,11 @@ import UIKit
 
 final class TrackerCollectionViewCell: UICollectionViewCell {
     
-    //MARK: - Init
+    //MARK: - init
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
-        
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -69,6 +67,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         self.delegate = delegate
         self.tracker = tracker
         rectView.backgroundColor = tracker.color
+        rectView.layer.borderColor = ypColors.ypBorderColor.cgColor
         emojiLabel.text = tracker.emoji
         emojiLabel.backgroundColor = .white.withAlphaComponent(0.3)
         titleLabel.text = tracker.name

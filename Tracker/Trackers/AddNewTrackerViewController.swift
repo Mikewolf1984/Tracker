@@ -2,13 +2,12 @@ import UIKit
 
 final class AddNewTrackerViewController: UIViewController {
     
-    //MARK: - Init
+    //MARK: - init
     init(delegate: AddHabitOrTrackerDelegate, categories: [TrackerCategory]) {
         self.delegate = delegate
         self.categories = categories
         super.init(nibName: nil, bundle: nil)
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -63,13 +62,6 @@ final class AddNewTrackerViewController: UIViewController {
             habitCreateButton.widthAnchor.constraint(equalToConstant: 335),
             habitCreateButton.heightAnchor.constraint(equalToConstant: 60)
         ])
-        /*TODO later irregularEventCreateButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            irregularEventCreateButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            irregularEventCreateButton.topAnchor.constraint(equalTo: habitCreateButton.bottomAnchor, constant: 16),
-            irregularEventCreateButton.widthAnchor.constraint(equalToConstant: 335),
-            irregularEventCreateButton.heightAnchor.constraint(equalToConstant: 60)
-        ]) */
     }
     
     //MARK: - objc methods

@@ -2,7 +2,7 @@ import CoreData
 import UIKit
 
 final class TrackerRecordStore: NSObject {
-    //MARK: - Init
+    //MARK: - init
     
     private override init() {
         context = DataBaseStore.shared.context
@@ -42,9 +42,7 @@ final class TrackerRecordStore: NSObject {
         try context.save()
         try updateRecords()
         NotificationCenter.default.post(name: .trackerRecordsDidChange, object: nil)
-        
     }
-    
     
     func removeRecord(_ record: TrackerRecord) throws {
         let fetchRequest: NSFetchRequest<TrackerRecordCD> = TrackerRecordCD.fetchRequest()
@@ -61,7 +59,6 @@ final class TrackerRecordStore: NSObject {
         try context.save()
         try updateRecords()
         NotificationCenter.default.post(name: .trackerRecordsDidChange, object: nil)
-        
     }
     
     func deleteAllRecords(for tracker: Tracker) throws {
@@ -93,8 +90,6 @@ final class TrackerRecordStore: NSObject {
         } catch {return 0}
     }
     
-    
-    
     func isCompletedInDate(for tracker: Tracker, date: String) -> Bool {
         let fetchRequest = NSFetchRequest<TrackerRecordCD>(entityName: "TrackerRecordCD")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: false)]
@@ -104,8 +99,6 @@ final class TrackerRecordStore: NSObject {
             return !result.isEmpty
         } catch {return false}
     }
-    
-    
     //MARK: - private methods
     //MARK: - objc methods
     //MARK: - extensions

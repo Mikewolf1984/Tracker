@@ -4,13 +4,12 @@ import Foundation
 protocol TrackerDataStore {
     var context: NSManagedObjectContext { get }
     func addNewTracker(_ tracker: Tracker) throws
-    //TODO: func delete(_ record: NSManagedObject) throws
 }
 
 final class TrackerStore: NSObject {
     //MARK: - Init
     private override init() {
-       context = DataBaseStore.shared.context
+        context = DataBaseStore.shared.context
         self.trackers = []
         super.init()
     }
@@ -19,7 +18,6 @@ final class TrackerStore: NSObject {
     static let shared = TrackerStore()
     var trackers = [Tracker]()
     
-
     //MARK: - private properties
     private let uiColorMarshalling = UIColorMarshalling()
     private let scheduleTransformer  = ScheduleTransformer()
@@ -64,14 +62,14 @@ final class TrackerStore: NSObject {
                        date: cd.date ?? ""
         )
     }
-   
+    
     func getTrackerById(_ id: UUID) throws -> TrackerCD? {
         let request: NSFetchRequest<TrackerCD> = TrackerCD.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id.uuidString)
         request.fetchLimit  = 1
         let result = try context.fetch(request).first as TrackerCD?
         return result
-   
+        
     }
     
     func getAllTrackers() throws -> [TrackerCD?] {

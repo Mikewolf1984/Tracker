@@ -11,7 +11,6 @@ final class FiltersViewController: UIViewController {
     
     // MARK: - public properties
     var selectedFilter: TrackerFilter?
-    
     var onFilterSelected: ((TrackerFilter) -> Void)?
     
     // MARK: - private properties
@@ -23,8 +22,6 @@ final class FiltersViewController: UIViewController {
         ("Завершенные", .completed),
         ("Незавершенные", .uncompleted),
     ]
-    
-   
     
     // MARK: - override methods
     override func viewDidLoad() {
@@ -93,8 +90,6 @@ extension FiltersViewController: UITableViewDataSource {
                 separatorLine.widthAnchor.constraint(equalTo: cell.contentView.widthAnchor, constant: -32),
                 separatorLine.heightAnchor.constraint(equalToConstant: 1)
             ])
-            
-            
         }
         let filter = filters[indexPath.row].1
         if filter == .completed || filter == .uncompleted {
@@ -111,7 +106,7 @@ extension FiltersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         75
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedFilter = filters[indexPath.row].1
         onFilterSelected?(selectedFilter)

@@ -12,7 +12,6 @@ final class TrackersSupplementaryView: UICollectionReusableView {
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
-        
     }
     
     required init?(coder: NSCoder) {

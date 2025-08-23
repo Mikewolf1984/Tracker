@@ -9,9 +9,7 @@ final class TrackerCategoryStore: NSObject {
     //MARK: - Init
     weak var delegate: TrackerCategoryStoreDelegate?
     private override init() {
-        
         super.init()
-        
     }
     
     //MARK: - public properties
@@ -83,16 +81,6 @@ final class TrackerCategoryStore: NSObject {
         try context.save()
     }
     
-    
-    func deleteCategoryFromCD(category: TrackerCategory) throws {
-        /* let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
-         fetchRequest.predicate = NSPredicate(format: "name == %@", category.name)
-         guard let category = try context.fetch(fetchRequest).first else { return }
-         context.delete(category)
-         */
-        try context.save()
-    }
-    
     func saveCategoryToCD (category: TrackerCategory, tracker: Tracker?) throws {
         let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
         fetchRequest.resultType = .managedObjectIDResultType
@@ -128,12 +116,10 @@ final class TrackerCategoryStore: NSObject {
                 }
                 try context.save()
             }
-            
         }
     }
     
     //MARK: - private methods
-    
     //MARK: - objc methods
     //MARK: - extensions
 }

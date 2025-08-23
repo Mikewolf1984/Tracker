@@ -2,7 +2,7 @@ import UIKit
 
 final class AddTrackerCell: UITableViewCell {
     
-    //MARK: - Init
+    //MARK: - init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         backgroundColor = ypColors.ypBackGroundColor
