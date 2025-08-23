@@ -3,10 +3,16 @@ import SnapshotTesting
 @testable import Tracker
 
 final class TrackerScreenshotTests: XCTestCase {
-    func testTrackersViewController() throws {
+    func testLightTrackersViewController() throws {
         let trackersViewController = TrackersViewController()
         trackersViewController.loadViewIfNeeded()
-        assertSnapshots(matching: trackersViewController, as: [.image])
+        assertSnapshots(matching: trackersViewController, as: [.image(traits: .init(userInterfaceStyle: .light))])
+    }
+    func testDarkTrackersViewController() throws {
+        let trackersViewController = TrackersViewController()
+        trackersViewController.loadViewIfNeeded()
+        assertSnapshots(matching: trackersViewController, as: [.image(traits: .init(userInterfaceStyle: .dark))])
     }
 }
+
 
