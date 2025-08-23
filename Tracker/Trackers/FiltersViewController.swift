@@ -56,7 +56,7 @@ final class FiltersViewController: UIViewController {
         filtersTableView.translatesAutoresizingMaskIntoConstraints = false
         filtersTableView.clipsToBounds = true
         filtersTableView.separatorStyle = .none
-        filtersTableView.backgroundColor = YPColors.ypBackGroundColor
+        filtersTableView.backgroundColor = ypColors.ypBackGroundColor
         filtersTableView.layer.cornerRadius = 16
         NSLayoutConstraint.activate([
             filtersTableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
@@ -75,12 +75,12 @@ extension FiltersViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         
-        cell.backgroundColor = Colors.background
+        cell.backgroundColor = ypColors.ypBackGroundColor
         
         if indexPath.item < 3 {
             let separatorLine: UIImageView = {
                 let imageView = UIImageView(image: UIImage(named: "divider"))
-                imageView.tintColor = YPColors.ypGray
+                imageView.tintColor = ypColors.ypGray
                 imageView.contentMode = .scaleAspectFill
                 return imageView
             }()

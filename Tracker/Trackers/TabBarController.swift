@@ -10,7 +10,7 @@ final class TabBarViewController: UITabBarController {
     
     //MARK: - private methods
     private func configureTabBar() {
-        view.backgroundColor = Colors.second
+        view.backgroundColor = ypColors.ypSecond
         tabBar.isTranslucent = false
         let trackersViewController =  TrackersViewController()
         let statisticsViewController = StatisticsViewController()

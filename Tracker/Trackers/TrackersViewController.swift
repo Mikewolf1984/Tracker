@@ -30,11 +30,16 @@ final class TrackersViewController: UIViewController {
     private let dataProvider = TrackersDataProvider.shared
     
     private  let trackersLabel = UILabel()
-    private  let searchField = UISearchTextField()
+    private  let searchField: UISearchTextField = {
+        let searchField: UISearchTextField = UISearchTextField()
+        searchField.placeholder = NSLocalizedString("search", comment: "Поиск")
+        searchField.backgroundColor = ypColors.ypBackGroundColor
+        return searchField
+    }()
     private  let addButton: UIButton = {
         let button: UIButton = UIButton(type: .system)
         button.setImage(UIImage(named: "addButton"), for: .normal)
-        button.tintColor = Colors.first
+        button.tintColor = ypColors.ypFirst
         button.addTarget(self, action: #selector(addButtonTouch), for: .touchUpInside)
         return button
     }()
@@ -43,9 +48,9 @@ final class TrackersViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
-        button.setTitleColor(Colors.second, for: .normal)
+        button.setTitleColor(ypColors.ypSecond, for: .normal)
         button.setTitle(NSLocalizedString("filters", comment: "Фильтры") , for: .normal)
-        button.backgroundColor = Colors.blue
+        button.backgroundColor = ypColors.ypBlue
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(filtersButtonTouch), for: .touchUpInside)
         return button
@@ -55,11 +60,13 @@ final class TrackersViewController: UIViewController {
         let datePicker: UIDatePicker = UIDatePicker()
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
-        //datePicker.locale = Locale(identifier: "ru_Ru")
+        datePicker.backgroundColor = ypColors.ypBackGroundColor
         datePicker.addTarget(self, action: #selector(dateDidChanged(_:)), for: .valueChanged)
         return datePicker
     }()
     
+    let dizzyImageView = UIImageView()
+    let dizzyLabel = UILabel()
    
     
     private var collectionView: UICollectionView = {
@@ -90,7 +97,7 @@ final class TrackersViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = Colors.second
+        view.backgroundColor = ypColors.ypSecond
         updateModelFromDB ()
         currentDate = datePickerButton.date
         if #available(iOS 15.0, *) {
@@ -116,8 +123,19 @@ final class TrackersViewController: UIViewController {
         self.view.addGestureRecognizer(tapGesture)
     }
     
+    //MARK:  - public methods
+    
+    func configureForTests()
+     {
+         filteredCategories = []
+         categories = []
+         trackers = []
+         
+     }
+    
     //MARK: - private methods
        
+   
     private func updateModelFromDB ()
     {
         trackers = dataProvider.getAllTrackers()
@@ -134,7 +152,7 @@ final class TrackersViewController: UIViewController {
             var filteredTrackers = [Tracker]()
             if !category.trackers.isEmpty {
                
-                    switch selectedFilter {
+                    switch filter {
                     case .completed:
                         for tracker in category.trackers {
                             if isTrackerCompletedToday(tracker)&&(tracker.schedule.contains(currentDayOfWeek))  {
@@ -197,6 +215,7 @@ final class TrackersViewController: UIViewController {
                 try dataProvider.deleteRecords(for: tracker)
                 dateRefresh()
                 filteredCategories = filterVisibleCategories(with: selectedFilter)
+                showTrackersOrStub()
                 
             } catch {
                 print("Error deleting tracker: \(error)")
@@ -210,7 +229,7 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
     
     private func showTrackersOrStub () {
         
-        if (filteredCategories.count) > 0 {
+        if (filteredCategories.count)*trackers.count > 0 {
             view.addSubview(collectionView)
             collectionView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
@@ -221,23 +240,26 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
                 
             ])
             view.addSubview(filtersButton)
-        configureFiltersButton()
+            configureFiltersButton()
+            if dizzyImageView.superview != nil {
+                dizzyImageView.removeFromSuperview()
+            }
+            if dizzyLabel.superview != nil {
+                dizzyLabel.removeFromSuperview()
+            }
         } else {
                 
             if collectionView.superview != nil {
                 collectionView.removeFromSuperview()
             }
-                let dizzyImageView = UIImageView()
                 view.addSubview(dizzyImageView)
                 dizzyImageView.translatesAutoresizingMaskIntoConstraints = false
                 dizzyImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
                 dizzyImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor).isActive = true
                 dizzyImageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
                 dizzyImageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-                let dizzyLabel = UILabel()
-                dizzyLabel.text = NSLocalizedString("what_to_track", comment: "Что будем отслеживать?")
-                dizzyLabel.font = .systemFont(ofSize: 12, weight: .medium)
-                dizzyLabel.textColor = Colors.first
+               dizzyLabel.font = .systemFont(ofSize: 12, weight: .medium)
+                dizzyLabel.textColor = ypColors.ypFirst
                 view.addSubview(dizzyLabel)
                 dizzyLabel.translatesAutoresizingMaskIntoConstraints = false
                 dizzyLabel.centerXAnchor.constraint(equalTo: dizzyImageView.centerXAnchor).isActive = true
@@ -268,7 +290,7 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
         datePickerButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
         trackersLabel.text = NSLocalizedString("trackers_title", comment: "Трекеры")
         trackersLabel.font  = UIFont.systemFont(ofSize: 34, weight: .bold)
-        trackersLabel.textColor = Colors.first
+        trackersLabel.textColor = ypColors.ypFirst
         view.addSubview(trackersLabel)
         trackersLabel.translatesAutoresizingMaskIntoConstraints = false
         trackersLabel.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 1).isActive = true
@@ -277,11 +299,9 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
         searchField.translatesAutoresizingMaskIntoConstraints = false
         searchField.topAnchor.constraint(equalTo: trackersLabel.bottomAnchor, constant: 7).isActive = true
         searchField.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
-        searchField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -16).isActive = true
+        searchField.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -32).isActive = true
         searchField.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        //searchField.searchBarStyle = .minimal
-        searchField.placeholder =  NSLocalizedString("search", comment: "Поиск")
-        collectionView.backgroundColor = Colors.second
+        collectionView.backgroundColor = ypColors.ypSecond
         showTrackersOrStub()
     }
     
@@ -314,6 +334,7 @@ let cancelTitle =  NSLocalizedString("cancel_button", comment: "отменить
         } else {
             currentDateString = "fail"
         }
+        selectedFilter = .all
         updateModelFromDB()
     }
     

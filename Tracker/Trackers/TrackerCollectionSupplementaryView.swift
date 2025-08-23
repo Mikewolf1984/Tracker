@@ -23,7 +23,7 @@ final class TrackersSupplementaryView: UICollectionReusableView {
     let titleLabel: UILabel =  {
         let label = UILabel()
         label.font = .systemFont(ofSize: 19, weight: .bold)
-        label.textColor = Colors.first
+        label.textColor = ypColors.ypFirst
         return label
     }()
 }

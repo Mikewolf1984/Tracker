@@ -30,7 +30,7 @@ final class StatisticsTableViewCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 34, weight: .bold)
-        label.textColor = .black// Colors.primary
+        label.textColor = ypColors.ypFirst
         return label
     }()
     
@@ -38,7 +38,7 @@ final class StatisticsTableViewCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .black // Colors.primary
+        label.textColor = ypColors.ypFirst
         return label
     }()
     

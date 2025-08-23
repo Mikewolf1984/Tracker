@@ -9,7 +9,7 @@ final class StatisticsViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.clipsToBounds = true
         label.font = UIFont.systemFont(ofSize: 34, weight: .bold)
-        label.textColor = .black
+        label.textColor = ypColors.ypFirst
         label.text = "Статистика"
         return label
     }()
@@ -17,7 +17,7 @@ final class StatisticsViewController: UIViewController {
     private var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = Colors.lightGray
+        tableView.backgroundColor = ypColors.ypSecond
         tableView.separatorStyle = .none
         
         return tableView
@@ -30,7 +30,7 @@ final class StatisticsViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.clipsToBounds = true
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .black
+        label.textColor = ypColors.ypFirst
         label.text = "Анализировать пока нечего"
         
         return label
@@ -42,12 +42,12 @@ final class StatisticsViewController: UIViewController {
     //MARK: - override methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let completedTrackers = Set(dataProvider.getCompletedTrackers())
-        allCount = completedTrackers.count
         setupTitleLabel()
-        view.backgroundColor = .systemBackground
-        if allCount == 0 {
+        view.backgroundColor = ypColors.ypSecond
+        let completedTrackers = Set(dataProvider.getCompletedTrackers())
+        let allTrackersCount = dataProvider.getAllTrackers().count
+        allCount = completedTrackers.count
+        if allTrackersCount == 0 {
             setupDizzyView()
         } else {
             configureTableView()
@@ -110,11 +110,14 @@ final class StatisticsViewController: UIViewController {
     //MARK: - objc methods
     @objc private func handleTrackerRecordsDidChange() {
         let completedTrackers = Set(dataProvider.getCompletedTrackers())
+        let allTrackersCount = dataProvider.getAllTrackers().count
         allCount = completedTrackers.count
-        if allCount == 0 {
+        if allTrackersCount == 0 {
             setupDizzyView()
         } else {
             configureTableView()
+            tableView.dataSource = self
+            tableView.delegate = self
             tableView.reloadData()
         }
     }

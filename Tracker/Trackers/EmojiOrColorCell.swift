@@ -52,9 +52,9 @@ final class EmojiOrColorCell: UICollectionViewCell {
             contentView.layer.borderColor = UIColor.white.cgColor
             
             if isCellSelected {
-                contentView.backgroundColor = .systemBackground
+                contentView.backgroundColor = ypColors.ypLightGray
             } else  {
-                contentView.backgroundColor = .white
+                contentView.backgroundColor = ypColors.ypSecond
             }
         }
             
@@ -72,7 +72,7 @@ final class EmojiOrColorCell: UICollectionViewCell {
             if isCellSelected {
                 contentView.layer.borderColor = cellColor.withAlphaComponent(0.3).cgColor
             } else {
-                contentView.layer.borderColor = UIColor.white.cgColor }
+                contentView.layer.borderColor = ypColors.ypSecond?.cgColor }
         }
     }
 }

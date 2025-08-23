@@ -152,13 +152,24 @@ extension TrackersDataProvider: DataProviderProtocol {
         try trackersDataStore.addNewTracker(tracker, category: categoryCD)
     }
     
-   
-    
-    func deleteTracker(id: UUID) throws {
-        guard let trackerCD =  try trackersDataStore.getTrackerById(id) else { return}
-        context.delete(trackerCD)
-        try context.save()
+   func deleteTracker(id: UUID) throws {
+    guard let trackerCD =  try trackersDataStore.getTrackerById(id) else { return}
+       guard let categoryCD = trackerCD.categoryRS else {return}
+       context.delete(trackerCD)
+       let oldTrackes = categoryCD.trackers as? [UUID]
+       var newTrackers = [UUID]()
        
+       for trackerID in oldTrackes ?? [] {
+           if trackerID != id {
+               newTrackers.append(trackerID)
+           }
+       }
+       if !newTrackers.isEmpty {
+           categoryCD.trackers = newTrackers as NSObject
+       } else {
+           context.delete(categoryCD)
+       }
+       try context.save()
     }
     
     func deleteRecords(for tracker: Tracker) throws {

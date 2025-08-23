@@ -83,33 +83,6 @@ final class TrackerCategoryStore: NSObject {
         try context.save()
     }
     
-    func removeTrackerFromCategory(trackerToRemove: Tracker) throws {
-        
-        var nameToRemove = String()
-        var newTrackers: [Tracker] = []
-        
-        var categories: [TrackerCategory] = []
-        categories = try getCategories()
-        for category in categories {
-            for tracker in category.trackers {
-                if tracker.id == trackerToRemove.id {
-                    nameToRemove = category.name
-                    newTrackers = category.trackers.filter { $0.id != trackerToRemove.id }
-                }
-            }
-            
-        }
-        
-        if !nameToRemove.isEmpty {
-            guard let categoryToRemove = try getCategoryByName(nameToRemove) else { return  }
-            try deleteCategoryFromCD(category: categoryToRemove)
-            for tracker in newTrackers {
-                try saveCategoryToCD(category: categoryToRemove, tracker: tracker)
-            }
-            
-            try context.save()
-        }
-    }
     
     func deleteCategoryFromCD(category: TrackerCategory) throws {
         /* let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()

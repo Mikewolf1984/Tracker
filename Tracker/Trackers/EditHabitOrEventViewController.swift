@@ -27,7 +27,7 @@ final class EditHabitOrEventViewController: UIViewController {
         let tableView: UITableView = UITableView()
         tableView.register(AddTrackerCell.self, forCellReuseIdentifier: "cell")
         tableView.layer.cornerRadius = 16
-        tableView.backgroundColor = Colors.lightGray
+        tableView.backgroundColor = ypColors.ypBackGroundColor
         tableView.separatorStyle = .none
         tableView.keyboardDismissMode = .onDrag
         return tableView
@@ -48,7 +48,7 @@ final class EditHabitOrEventViewController: UIViewController {
         let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftView = leftPaddingView
         textField.leftViewMode = .always
-        textField.backgroundColor = Colors.lightGray
+        textField.backgroundColor = ypColors.ypBackGroundColor
         textField.layer.cornerRadius = 16
         
         let clearTextButton = UIButton(type: .custom)
@@ -77,7 +77,7 @@ final class EditHabitOrEventViewController: UIViewController {
     private let createButton: UIButton = {
         let button: UIButton = UIButton(type: .system)
         button.setTitle("Сохранить", for: .normal)
-        button.backgroundColor = YPColors.ypGray
+        button.backgroundColor = ypColors.ypGray
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
@@ -117,10 +117,10 @@ final class EditHabitOrEventViewController: UIViewController {
     private let collectionViewIdentifier: String = "EmojiOrColorCollectionViewCell"
     private let emojies = [ "🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     
-    private let colors = [YPColors.ypColor1, YPColors.ypColor2, YPColors.ypColor3, YPColors.ypColor4, YPColors.ypColor5,
-                          YPColors.ypColor6, YPColors.ypColor7, YPColors.ypColor8, YPColors.ypColor9, YPColors.ypColor10,
-                          YPColors.ypColor11, YPColors.ypColor12, YPColors.ypColor13, YPColors.ypColor14, YPColors.ypColor15,
-                          YPColors.ypColor16, YPColors.ypColor17, YPColors.ypColor18]
+    private let colors = [ypColors.ypColor1, ypColors.ypColor2, ypColors.ypColor3, ypColors.ypColor4, ypColors.ypColor5,
+                          ypColors.ypColor6, ypColors.ypColor7, ypColors.ypColor8, ypColors.ypColor9, ypColors.ypColor10,
+                          ypColors.ypColor11, ypColors.ypColor12, ypColors.ypColor13, ypColors.ypColor14, ypColors.ypColor15,
+                          ypColors.ypColor16, ypColors.ypColor17, ypColors.ypColor18]
     private var emojiIndexPath: IndexPath?
     private var colorIndexPath: IndexPath?
     
@@ -288,7 +288,7 @@ final class EditHabitOrEventViewController: UIViewController {
                 createButton.backgroundColor = .black
             } else {
                 createButton.isEnabled = false
-                createButton.backgroundColor = YPColors.ypGray
+                createButton.backgroundColor = ypColors.ypGray
             }
         case .irregularEvent:
             if conditionName && conditionCategory && conditionColorAndEmoji {
@@ -296,7 +296,7 @@ final class EditHabitOrEventViewController: UIViewController {
                 createButton.backgroundColor = .black
             } else {
                 createButton.isEnabled = false
-                createButton.backgroundColor = YPColors.ypGray
+                createButton.backgroundColor = ypColors.ypGray
             }
         }
     }

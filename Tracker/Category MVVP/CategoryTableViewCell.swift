@@ -13,7 +13,7 @@ final class CategoryTableViewCell: UITableViewCell {
     
     private let separatorLine: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "divider"))
-        imageView.tintColor = YPColors.ypGray
+        imageView.tintColor = ypColors.ypGray
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
@@ -23,7 +23,7 @@ final class CategoryTableViewCell: UITableViewCell {
     func configure(with viewModel: CategoryViewModel, isLastCell: Bool) {
         
         self.viewModel = viewModel
-        backgroundColor = .lightGray
+        backgroundColor = ypColors.ypBackGroundColor
         viewModel.categoryNameBinding = { [ weak self ] categoryName in
             self?.categoryNameLabel.text = categoryName
         }
@@ -33,6 +33,7 @@ final class CategoryTableViewCell: UITableViewCell {
             categoryNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             categoryNameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ])
+       
         if !isLastCell {
             addSubview(separatorLine)
             separatorLine.translatesAutoresizingMaskIntoConstraints = false
