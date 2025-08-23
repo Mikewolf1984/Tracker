@@ -36,7 +36,7 @@ final class CategoriesViewModel {
     
     // MARK: - private methods
     private func getCategoriesFromStore() -> [CategoryViewModel] {
-        let result = try? categoryDataStore?.getCategories().map {
+        let result = try? categoryDataStore.getCategories().map {
             CategoryViewModel(categoryName: $0.name)
         }
         return result ?? []

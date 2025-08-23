@@ -17,7 +17,7 @@ final class CategoryViewModel: Identifiable {
     // MARK: - init
     init(categoryName: String) {
         do {
-            guard let category = try categoryStore?.getCategoryByName(categoryName) else {
+            guard let category = try categoryStore.getCategoryByName(categoryName) else {
                 category = TrackerCategory(name: categoryName, trackers: [])
                 return
             }

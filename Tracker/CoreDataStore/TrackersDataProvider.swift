@@ -7,7 +7,7 @@ struct TrackerObject {
     let daysCount: Int
 }
 protocol DataProviderDelegate: AnyObject {
-    //TODO: func didUpdate(_ update: TrackerStoreUpdate)
+    
 }
 
 protocol DataProviderProtocol {
@@ -15,13 +15,18 @@ protocol DataProviderProtocol {
     func todayTrackersForSection (day: DayOfWeek, section: Int) -> [Tracker]
     func numberOfRowsInSection(day: DayOfWeek, section: Int) -> Int
     func object(at indexPath: IndexPath, day: DayOfWeek, currentDate: String) -> TrackerObject
-    func addTracker(_ tracker: Tracker) throws
-    //TODO: func deleteRecord(at indexPath: IndexPath) throws
+    func addTracker(_ tracker: Tracker, category: TrackerCategory) throws
+    func deleteTracker(id: UUID) throws
 }
 
 final class TrackersDataProvider: NSObject {
     enum DataProviderError: Error {
         case failedToInitializeContext
+    }
+    
+    //MARK: - Init
+    private override init(){
+        super.init()
     }
     //MARK: public properties
     static let shared = TrackersDataProvider()
@@ -47,9 +52,40 @@ final class TrackersDataProvider: NSObject {
     {
         try? fetchedResultsController.performFetch()
     }
+    
+    func getAllTrackers() -> [Tracker] {
+        
+        trackersDataStore.updateTrackersStore()
+        let result = trackersDataStore.trackers
+        return result
+    }
+    
+    func getAllCategories() -> [TrackerCategory] {
+        categoryDataStore.updateCategoryStore()
+        let result = categoryDataStore.categories
+        return result
+    }
+    
+    func getAllRecords() -> [TrackerRecord] {
+        let records = trackerRecordStore.records
+        return Array(records)
+    }
+    
+    func getCompletedTrackers() -> [TrackerRecord] {
+        var result: [TrackerRecord] = []
+        let allTrackers = getAllTrackers()
+        let allRecords = getAllRecords()
+        for tracker in allTrackers {
+            for record in allRecords {
+                if record.id == tracker.id {
+                    result.append(record)
+                }
+            }
+        }
+        return result
+    }
 }
-
-// MARK: - DataProviderProtocol
+//MARK: - extensions
 extension TrackersDataProvider: DataProviderProtocol {
     func numberOfSectionsByDay(day: DayOfWeek)-> Int {
         var result :Int = 0
@@ -63,7 +99,7 @@ extension TrackersDataProvider: DataProviderProtocol {
     }
     func numberOfSections() -> Int {
         fetchedResultsController.sections?.count ?? 0
-    
+        
     }
     
     func todayCategoriesToShow(day: DayOfWeek) -> [TrackerCategory] {
@@ -79,8 +115,8 @@ extension TrackersDataProvider: DataProviderProtocol {
         {
             let trackerCatIDs = fetchedResultsController.object(at: IndexPath(row: 0, section: section) ).trackers as? [UUID] ?? []
             for trackerId in trackerCatIDs {
-                guard let trackerCD = try trackersDataStore?.getTrackerById(trackerId) else {return []}
-                guard let tracker = trackersDataStore?.cdToTracker(trackerCD) else {return []}
+                guard let trackerCD = try trackersDataStore.getTrackerById(trackerId) else {return []}
+                let tracker = trackersDataStore.cdToTracker(trackerCD)
                 if tracker.schedule.contains(day) {
                     result.append(tracker)
                 }
@@ -98,8 +134,8 @@ extension TrackersDataProvider: DataProviderProtocol {
     func object(at indexPath: IndexPath, day: DayOfWeek, currentDate: String) -> TrackerObject {
         let trackersToday = todayTrackersForSection(day: day, section: indexPath.section)
         let tracker = trackersToday[indexPath.row]
-        let isCompleted = trackerRecordStore?.isCompletedInDate(for: tracker, date: currentDate) ?? false
-        let daysCount = trackerRecordStore?.recordsCount(for: tracker) ?? 0
+        let isCompleted = trackerRecordStore.isCompletedInDate(for: tracker, date: currentDate)
+        let daysCount = trackerRecordStore.recordsCount(for: tracker)
         return TrackerObject(tracker: tracker,
                              isCompleted: isCompleted, daysCount: daysCount)
     }
@@ -108,14 +144,36 @@ extension TrackersDataProvider: DataProviderProtocol {
         fetchedResultsController.object(at: IndexPath(item: 0, section: section)).name ?? ""
     }
     
-    func addTracker(_ tracker: Tracker) throws {
-        try trackersDataStore?.addNewTracker(tracker)
+    func addTracker(_ tracker: Tracker, category: TrackerCategory)  throws {
+        guard let categoryCD = try categoryDataStore.getCategoryCDByName(category.name) else { return  }
+        try trackersDataStore.addNewTracker(tracker, category: categoryCD)
     }
     
-    //TODO:    func deleteTracker(at indexPath: IndexPath) throws {
+    func deleteTracker(id: UUID) throws {
+        guard let trackerCD =  try trackersDataStore.getTrackerById(id) else { return}
+        guard let categoryCD = trackerCD.categoryRS else {return}
+        context.delete(trackerCD)
+        let oldTrackes = categoryCD.trackers as? [UUID]
+        var newTrackers = [UUID]()
+        
+        for trackerID in oldTrackes ?? [] {
+            if trackerID != id {
+                newTrackers.append(trackerID)
+            }
+        }
+        if !newTrackers.isEmpty {
+            categoryCD.trackers = newTrackers as NSObject
+        } else {
+            context.delete(categoryCD)
+        }
+        try context.save()
+    }
+    
+    func deleteRecords(for tracker: Tracker) throws {
+        try trackerRecordStore.deleteAllRecords(for: tracker)
+    }
 }
 
-// MARK: - NSFetchedResultsControllerDelegate
 extension TrackersDataProvider: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         

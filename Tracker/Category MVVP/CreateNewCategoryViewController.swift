@@ -4,9 +4,7 @@ final class CreateNewCategoryViewController: UIViewController {
     
     // MARK: - public properties
     var category: TrackerCategory?
-    
     var categoryName: String?
-    
     var onCategoryCreated: ((TrackerCategory) -> Void)?
     
     // MARK: - private properties
@@ -15,7 +13,12 @@ final class CreateNewCategoryViewController: UIViewController {
     private let dataProvider = TrackersDataProvider.shared
     private var titleLabel: UILabel = UILabel()
     private var categoryNameTextField: UITextField = UITextField()
-    private var createCategoryButton: UIButton = UIButton(type: .system)
+    private var createCategoryButton: UIButton = {
+        let button = UIButton()
+        button.isEnabled = false
+        button.backgroundColor = ypColors.ypGray
+        return button
+    }()
     private lazy var categoryNameFieldWarningMessage: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -59,12 +62,11 @@ final class CreateNewCategoryViewController: UIViewController {
         categoryNameTextField.placeholder = "Введите название категории"
         categoryNameTextField.font = .systemFont(ofSize: 17)
         categoryNameTextField.textColor = .black
-        categoryNameTextField.backgroundColor = YPColors.ypBackGroundColor
+        categoryNameTextField.backgroundColor = ypColors.ypBackGroundColor
         categoryNameTextField.layer.cornerRadius = 16
         categoryNameTextField.layer.borderWidth = 0
         categoryNameTextField.delegate = self
         categoryNameTextField.addTarget(self, action: #selector(categoryNameTextFieldDidChange), for: .editingChanged)
-        
         let paddingView = UIView(
             frame: CGRect(
                 x: 0, y: 0, width: 16, height: categoryNameTextField.frame.height))
@@ -96,7 +98,6 @@ final class CreateNewCategoryViewController: UIViewController {
         createCategoryButton.setTitle("Готово", for: .normal)
         createCategoryButton.setTitleColor(.white, for: .normal)
         createCategoryButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        createCategoryButton.backgroundColor = .black
         createCategoryButton.layer.cornerRadius = 16
         createCategoryButton.addTarget(self, action: #selector(createCategoryButtonTapped), for: .touchUpInside)
         view.addSubview(createCategoryButton)
@@ -115,9 +116,8 @@ final class CreateNewCategoryViewController: UIViewController {
     @objc private func createCategoryButtonTapped() {
         guard let categoryName = categoryNameTextField.text, !categoryName.isEmpty else { return }
         do {
-            guard let newCategory = try categoryStore?.createCategory(name: categoryName) else { return }
+            let newCategory = try categoryStore.createCategory(name: categoryName)
             onCategoryCreated?(newCategory)
-            dataProvider.refreshStore()
             self.dismiss(animated: true)
         } catch {
             print("Error creating category: \(error)")
@@ -128,7 +128,7 @@ final class CreateNewCategoryViewController: UIViewController {
     @objc private func categoryNameTextFieldDidChange() {
         let hasText = !(categoryNameTextField.text?.isEmpty ?? true)
         createCategoryButton.isEnabled = hasText
-        createCategoryButton.alpha = hasText ? 1 : 0.3
+        createCategoryButton.backgroundColor = hasText ? ypColors.ypFirst : ypColors.ypGray
     }
     
     @objc private func dismissKeyboard() {

@@ -2,13 +2,9 @@ import UIKit
 import Foundation
 
 final class EmojiOrColorCell: UICollectionViewCell {
-    //MARK: - Init
+    //MARK: - init
     override init(frame: CGRect) {
         super.init(frame: frame)
-        //contentView.addSubview(rectView)
-        //contentView.addSubview(cellTextLabel)
-        //
-        
     }
     
     required init?(coder: NSCoder) {
@@ -35,7 +31,7 @@ final class EmojiOrColorCell: UICollectionViewCell {
         label.textAlignment = .center
         return label
     }()
-    //MARK: - override methods
+    
     //MARK: - public methods
     
     func configureView(cellText: String?, cellColor: UIColor?, isCellSelected: Bool) {
@@ -48,16 +44,14 @@ final class EmojiOrColorCell: UICollectionViewCell {
             NSLayoutConstraint.activate([ cellTextLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
                                           cellTextLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)])
             cellTextLabel.text = cellText
-            
             contentView.layer.borderColor = UIColor.white.cgColor
-            
-            if isCellSelected {
-                contentView.backgroundColor = YPColors.ypBackGroundColor
+            if isCellSelected  {
+                contentView.backgroundColor = ypColors.ypLightGray
             } else  {
-                contentView.backgroundColor = .white
+                contentView.backgroundColor = ypColors.ypSecond
             }
         }
-            
+        
         if let cellColor {
             contentView.subviews.forEach({ $0.removeFromSuperview() })
             contentView.addSubview(rectView)
@@ -69,16 +63,13 @@ final class EmojiOrColorCell: UICollectionViewCell {
                                           rectView.widthAnchor.constraint(equalToConstant: 40),
                                           rectView.heightAnchor.constraint(equalToConstant: 40)])
             rectView.layer.backgroundColor = cellColor.cgColor
+            
             if isCellSelected {
                 contentView.layer.borderColor = cellColor.withAlphaComponent(0.3).cgColor
+                contentView.layer.backgroundColor = ypColors.ypSecond?.cgColor
             } else {
-                contentView.layer.borderColor = UIColor.white.cgColor }
+                contentView.layer.borderColor = ypColors.ypSecond?.cgColor }
+            contentView.layer.backgroundColor = ypColors.ypSecond?.cgColor
         }
     }
 }
-//MARK: - private methods
-
-//MARK: - objc methods
-//MARK: - extensions
-
-

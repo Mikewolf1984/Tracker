@@ -1,9 +1,14 @@
 import Foundation
 import UIKit
 
-enum YPColors {
+enum ypColors {
     static let ypBorderColor = UIColor(named: "collectionCellBorderColor") ?? .systemGray
-    static let ypBackGroundColor = UIColor(named: "textBackGroundColor") ?? .systemBackground
+    static let ypBackGroundColor = UIColor(named: "ypBackGround") ?? .systemBackground
+    static let ypFirst = UIColor(named: "ypFirst")
+    static let ypSecond = UIColor(named: "ypSecond")
+    static let ypLightGray = UIColor(named: "ypLightGray")
+    static let ypRed = UIColor(named: "ypRed")
+    static let shadow = UIColor(named: "ypShadow")
     static let ypBlue = UIColor(named: "ypBlue") ?? .systemBlue
     static let ypGray = UIColor(named: "ypGray") ?? .systemGray
     static let ypColor1 = UIColor(named: "selColor1 1") ?? .systemRed

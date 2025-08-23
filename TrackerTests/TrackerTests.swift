@@ -1,17 +1,18 @@
-//
-//  TrackerTests.swift
-//  TrackerTests
-//
-//  Created by Михаил Волков on 12.03.2025.
-//
-
-import Testing
+import XCTest
+import SnapshotTesting
 @testable import Tracker
 
-struct TrackerTests {
-
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+final class TrackerScreenshotTests: XCTestCase {
+    
+    func testLightTrackersViewController() throws {
+        let trackersViewController = TrackersViewController()
+        trackersViewController.loadViewIfNeeded()
+        assertSnapshots(matching: trackersViewController, as: [.image(traits: .init(userInterfaceStyle: .light))])
     }
-
+    func testDarkTrackersViewController() throws {
+        let trackersViewController = TrackersViewController()
+        assertSnapshots(matching: trackersViewController, as: [.image(traits: .init(userInterfaceStyle: .dark))])
+    }
 }
+
+

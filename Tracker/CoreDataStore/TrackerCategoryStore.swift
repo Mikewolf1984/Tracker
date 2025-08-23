@@ -8,32 +8,31 @@ protocol TrackerCategoryStoreDelegate: AnyObject {
 final class TrackerCategoryStore: NSObject {
     //MARK: - Init
     weak var delegate: TrackerCategoryStoreDelegate?
-    private init(context: NSManagedObjectContext) throws {
-        self.context = DataBaseStore.shared.context
+    private override init() {
         super.init()
-        let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
-        let trackerCategoriesCD = try context.fetch(fetchRequest)
-        self.categories = try self.getCategories()
     }
     
     //MARK: - public properties
     var categories: [TrackerCategory] = []
-    static let shared = try? TrackerCategoryStore(context: DataBaseStore.shared.context)
+    static let shared = TrackerCategoryStore()
     //MARK: - private properties
-    private var context: NSManagedObjectContext
+    private let context = DataBaseStore.shared.context
     //MARK: - override methods
     //MARK: - public methods
     func createCategory(name: String) throws -> TrackerCategory {
         let newCategory = TrackerCategory(name: name, trackers: [])
-        let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
-        fetchRequest.resultType = .managedObjectIDResultType
-        let categoryCoreData = TrackerCategoryCD(context: context)
+        let categoryCoreData = TrackerCategoryCD(context: DataBaseStore.shared.context)
         categoryCoreData.name = name
         categoryCoreData.trackers = [] as NSObject
-        try context.save()
+        DataBaseStore.shared.saveContext()
         return newCategory
     }
     
+    func updateCategoryStore () {
+        do {
+            categories = try getCategories()
+        } catch { print ("Error in updateCategoryStore")}
+    }
     func getCategories() throws -> [TrackerCategory] {
         var categories: [TrackerCategory] = []
         let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
@@ -42,9 +41,10 @@ final class TrackerCategoryStore: NSObject {
         for categoryCD in result {
             var trackers: [Tracker] = []
             for trackerID in categoryCD.trackers as? [UUID] ?? [] {
-                guard let trackerCD = try TrackerStore.shared?.getTrackerById(trackerID) else { return []}
-                guard let tracker = TrackerStore.shared?.cdToTracker(trackerCD) else {return []}
-                trackers.append(tracker)
+                if let trackerCD = try TrackerStore.shared.getTrackerById(trackerID)  {
+                    let tracker = TrackerStore.shared.cdToTracker(trackerCD)
+                    trackers.append(tracker)
+                }
             }
             let category = TrackerCategory(name: categoryCD.name ?? "", trackers: trackers)
             categories.append(category)
@@ -55,6 +55,14 @@ final class TrackerCategoryStore: NSObject {
     func getCategoryByName(_ name: String) throws -> TrackerCategory? {
         try getCategories().first { $0.name == name }
         
+    }
+    
+    func getCategoryCDByName(_ name: String) throws -> TrackerCategoryCD? {
+        let fetchRequest: NSFetchRequest<TrackerCategoryCD> = TrackerCategoryCD.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "name == %@", name)
+        fetchRequest.fetchLimit = 1
+        let result = try context.fetch(fetchRequest)
+        return result.first
     }
     
     func addTrackerToCategory(_ tracker: Tracker, categoryName: String) throws {
@@ -71,7 +79,6 @@ final class TrackerCategoryStore: NSObject {
         newTrackersIDs.append(tracker.id)
         categoryById.trackers = newTrackersIDs as NSObject
         try context.save()
-        
     }
     
     func saveCategoryToCD (category: TrackerCategory, tracker: Tracker?) throws {
@@ -106,14 +113,13 @@ final class TrackerCategoryStore: NSObject {
                         trackersIDs.append(tracker.id)
                     }
                     categoryCoreData.trackers = trackersIDs as NSObject
-                    try context.save()
                 }
+                try context.save()
             }
         }
     }
     
     //MARK: - private methods
-    
     //MARK: - objc methods
     //MARK: - extensions
 }
