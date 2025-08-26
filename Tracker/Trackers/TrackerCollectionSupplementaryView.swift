@@ -12,7 +12,6 @@ final class TrackersSupplementaryView: UICollectionReusableView {
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
-        
     }
     
     required init?(coder: NSCoder) {
@@ -23,7 +22,7 @@ final class TrackersSupplementaryView: UICollectionReusableView {
     let titleLabel: UILabel =  {
         let label = UILabel()
         label.font = .systemFont(ofSize: 19, weight: .bold)
-        label.textColor = .black
+        label.textColor = ypColors.ypFirst
         return label
     }()
 }

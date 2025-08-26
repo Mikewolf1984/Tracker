@@ -40,7 +40,7 @@ final class CategorySelectController: UIViewController {
         let tableView: UITableView = UITableView()
         tableView.register(CategoryTableViewCell.self, forCellReuseIdentifier: "CategoryTableViewCell")
         tableView.layer.cornerRadius = 16
-        tableView.backgroundColor = YPColors.ypBackGroundColor
+        tableView.backgroundColor = ypColors.ypBackGroundColor
         tableView.separatorStyle = .none
         tableView.isHidden = true
         return tableView
@@ -93,15 +93,17 @@ final class CategorySelectController: UIViewController {
     
     //MARK: - private methods
     private func checkButtonsState() {
+        tableView.reloadData()
         if viewModel?.categories != nil {
             if viewModel?.selectedCategory != nil {
                 if !addButton.isHidden {
                     addButton.isHidden = true
                     addButton.removeFromSuperview()
+                    view.addSubview(selectButton)
+                    selectButton.isHidden = false
+                    configureButton(button: selectButton, isActive: true)
                 }
-                view.addSubview(selectButton)
-                selectButton.isHidden = false
-                configureButton(button: selectButton, isActive: true)
+                
             } else {
                 view.addSubview(addButton)
                 addButton.isHidden = false
@@ -110,6 +112,7 @@ final class CategorySelectController: UIViewController {
         } else {
             view.addSubview(addButton)
             addButton.isHidden = false
+            addButton.isEnabled = false
             configureButton(button: addButton, isActive: true)
         }
     }
@@ -161,7 +164,7 @@ final class CategorySelectController: UIViewController {
             tableViewHeight = tableView.heightAnchor.constraint(equalToConstant: 0)
             tableViewHeight?.isActive = false
             tableView.layer.cornerRadius = 16
-            tableView.backgroundColor = YPColors.ypBackGroundColor
+            tableView.backgroundColor = ypColors.ypBackGroundColor
             tableView.translatesAutoresizingMaskIntoConstraints = false
         }
         tableViewHeightCalc()
@@ -209,6 +212,7 @@ final class CategorySelectController: UIViewController {
         createNewCategoryViewController.onCategoryCreated = { [ weak self ] category in
             guard let self else { return }
             viewModel?.addCategory(category)
+            viewModel?.selectedCategory = category
             selectedCategory = category
             tableViewHeightCalc()
             checkButtonsState()
@@ -225,14 +229,16 @@ extension CategorySelectController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         75
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         if let selected = selectedRow {
             tableView.cellForRow(at: [0, selected])?.accessoryType = .none
-            
         }
         selectedCategory = viewModel?.categories[indexPath.item].category
         viewModel?.selectedCategory = selectedCategory
         tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+        selectedRow = indexPath.item
         if !addButton.isHidden {
             addButton.isHidden = true
             addButton.removeFromSuperview()
@@ -242,6 +248,7 @@ extension CategorySelectController: UITableViewDelegate {
             selectButton.isHidden = false
             configureButton(button: selectButton, isActive: true)
         }
+        
     }
 }
 

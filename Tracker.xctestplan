@@ -1,0 +1,50 @@
+{
+  "configurations" : [
+    {
+      "id" : "C95365BE-3A05-418A-973D-C29EA83DC6F0",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "NSZombieEnabled",
+        "value" : "YES"
+      },
+      {
+        "key" : "MallocStackLoggingNoCompact",
+        "value" : "1"
+      }
+    ],
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Tracker.xcodeproj",
+      "identifier" : "4ADB4DCC2D82231F00FB84C7",
+      "name" : "Tracker"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "selectedTests" : [
+
+      ],
+      "target" : {
+        "containerPath" : "container:Tracker.xcodeproj",
+        "identifier" : "4ADB4DE22D82232200FB84C7",
+        "name" : "TrackerTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Tracker.xcodeproj",
+        "identifier" : "4A00D19E2E5657BA00565701",
+        "name" : "TrackerUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

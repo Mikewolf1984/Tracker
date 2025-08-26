@@ -10,13 +10,13 @@ final class TabBarViewController: UITabBarController {
     
     //MARK: - private methods
     private func configureTabBar() {
-        view.backgroundColor = .white
+        view.backgroundColor = ypColors.ypSecond
         tabBar.isTranslucent = false
         let trackersViewController =  TrackersViewController()
         let statisticsViewController = StatisticsViewController()
-        trackersViewController.tabBarItem.title = "Трекеры"
+        trackersViewController.tabBarItem.title = NSLocalizedString("trackers_title", comment: "Трекеры")
         trackersViewController.tabBarItem.image = UIImage(named: "trackerLogo")
-        statisticsViewController.tabBarItem.title = "Статистика"
+        statisticsViewController.tabBarItem.title = NSLocalizedString("statistics", comment: "Статистика")
         statisticsViewController.tabBarItem.image = UIImage(named: "statLogo")
         viewControllers = [trackersViewController, statisticsViewController]
         let topLine = CALayer()

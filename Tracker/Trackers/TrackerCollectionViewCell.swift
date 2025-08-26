@@ -2,17 +2,19 @@ import UIKit
 
 final class TrackerCollectionViewCell: UICollectionViewCell {
     
-    //MARK: - Init
+    //MARK: - init
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     //MARK: - private properties
+    var onEditButtonTapped: ((Tracker) -> Void)?
+    var onDeleteButtonTapped: ((Tracker) -> Void)?
+    
     private var isCompleted: Bool = false
     private var tracker: Tracker?
     weak var delegate: CompleteButtonDelegate?
@@ -23,7 +25,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         view.layer.masksToBounds = true
         view.backgroundColor = .blue
         view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor(named: "collectionCellBorderColor")?.cgColor
+        view.layer.borderColor = ypColors.ypBackGroundColor.cgColor ?? UIColor.white.cgColor
         return view
     }()
     private let emojiLabel: UILabel = {
@@ -44,7 +46,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     }()
     private let daysCounterLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .black
+        label.textColor = ypColors.ypFirst
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.text = "0 дней"
         return label
@@ -65,14 +67,15 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         self.delegate = delegate
         self.tracker = tracker
         rectView.backgroundColor = tracker.color
+        rectView.layer.borderColor = ypColors.ypBorderColor.cgColor
         emojiLabel.text = tracker.emoji
         emojiLabel.backgroundColor = .white.withAlphaComponent(0.3)
         titleLabel.text = tracker.name
         var textDays: String = ""
         switch daysCount {
-        case 1: textDays = "\(daysCount) день"
-        case 2, 3, 4: textDays = "\(daysCount) дня"
-        default: textDays = "\(daysCount) дней"
+        case 1: textDays = "\(daysCount) \(NSLocalizedString("day_1", comment: "день"))"
+        case 2, 3, 4: textDays = "\(daysCount) \(NSLocalizedString("day_2", comment: "дня"))"
+        default: textDays = "\(daysCount)  \(NSLocalizedString("day_3", comment: "дней"))"
         }
         daysCounterLabel.text = textDays
         redrawCompleteButton(isCompleted: isCompleted)
@@ -88,7 +91,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             rectView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             rectView.heightAnchor.constraint(equalToConstant: 90)
         ])
-        contentView.addSubview(emojiLabel)
+        rectView.addSubview(emojiLabel)
         emojiLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             emojiLabel.topAnchor.constraint(equalTo: rectView.topAnchor, constant: 12),
@@ -96,7 +99,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             emojiLabel.widthAnchor.constraint(equalToConstant: 24),
             emojiLabel.heightAnchor.constraint(equalToConstant: 24)
         ])
-        contentView.addSubview(titleLabel)
+        rectView.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: rectView.topAnchor, constant: 44),
@@ -120,6 +123,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             completeButton.widthAnchor.constraint(equalToConstant: 34),
             completeButton.heightAnchor.constraint(equalToConstant: 34)
         ])
+        let interaction = UIContextMenuInteraction(delegate: self)
+        rectView.addInteraction(interaction)
     }
     
     private func redrawCompleteButton(isCompleted: Bool) {
@@ -134,8 +139,40 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     //MARK: - objc methods
     @objc  private func toggleCompleteButton() {
+        AnalyticsService.shared.reportEvent(
+            event: "click",
+            params: [
+                "screen": "Main",
+                "item": "track"
+            ]
+        )
         guard let tracker = tracker else { return }
         delegate?.didTapCompleteButton(tracker: tracker)
         redrawCompleteButton(isCompleted: !isCompleted)
+    }
+}
+
+extension TrackerCollectionViewCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let editAction = UIAction(title: NSLocalizedString("edit_tracker", comment: "Редактировать" ) , image: nil) { [ weak self ] _ in
+                guard let self, let tracker = self.tracker else { return }
+                self.onEditButtonTapped?(tracker)
+            }
+            
+            let deleteAction = UIAction(title: "", image: nil) { [ weak self ] _ in
+                guard let self, let tracker = self.tracker else { return }
+                self.onDeleteButtonTapped?(tracker)
+                
+            }
+            
+            let deleteTitle = NSAttributedString(
+                string: NSLocalizedString("delete_tracker", comment: "Удалить" ),
+                attributes: [.foregroundColor: UIColor.red]
+            )
+            deleteAction.setValue(deleteTitle, forKey: "attributedTitle")
+            
+            return UIMenu(title: "", children: [editAction, deleteAction])
+        }
     }
 }

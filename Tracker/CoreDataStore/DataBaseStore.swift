@@ -3,6 +3,7 @@ import CoreData
 
 final class DataBaseStore {
     
+    private init() {}
     static let shared = DataBaseStore()
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "TrackerCoreData")
@@ -19,7 +20,6 @@ final class DataBaseStore {
     }
     
     func saveContext() {
-        let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
                 try context.save()
